@@ -1,7 +1,9 @@
 export default {
-    shows: 'Shows',
-    library: 'Library',
-    feed: 'Feed',
-    "listen later": 'listen later',
-    delete: "delete"
+    "shows": "Shows",
+    "library": "Library",
+    "feed": "Feed",
+    "later": "later",
+    "delete": "delete",
+    "details": "details",
+    "more": "more"
 }

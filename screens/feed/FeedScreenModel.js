@@ -12,6 +12,8 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
             this.feedData = result.items.map(item => {
                 item.image = item.itunes.image
                 item.duration = item.itunes.duration
+                item.description = item.description.replace(/<[^>]+>/g, '')
+                item.showName = result.title
                 return item
             })
         })

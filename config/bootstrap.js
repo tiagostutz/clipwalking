@@ -68,6 +68,10 @@ import {
     });
   
     // theme text styles
+    RkTheme.setType('RkText', 'header0', {
+      fontSize: theme => theme.fonts.sizes.h0,
+      fontFamily: theme => theme.fonts.family.bold,
+    });
     RkTheme.setType('RkText', 'header1', {
       fontSize: theme => theme.fonts.sizes.h1,
       fontFamily: theme => theme.fonts.family.bold,
@@ -204,27 +208,6 @@ import {
       backgroundColor: theme => theme.colors.control.background,
     });
     /*
-     RkModalImg types
-     */
-  
-    RkTheme.setType('RkModalImg', 'basic', {
-      img: {
-        margin: 1.5,
-      },
-      modal: {
-        backgroundColor: theme => theme.colors.screen.base,
-      },
-      footer: {
-        backgroundColor: theme => theme.colors.screen.base,
-        height: 50,
-      },
-      header: {
-        backgroundColor: theme => theme.colors.screen.base,
-        paddingBottom: 6,
-      },
-    });
-  
-    /*
      RkTextInput
      */
   
@@ -325,7 +308,8 @@ import {
   
     RkTheme.setType('RkCard', 'basic', {
       container: {
-        borderRadius: 3,
+        borderRadius: 0,
+        borderWidth: 0,
         backgroundColor: theme => theme.colors.control.background,
       },
       header: {
@@ -342,54 +326,10 @@ import {
       },
     });
   
-    RkTheme.setType('RkCard', 'backImg', {
-      container: {
-        borderWidth: 0,
-        borderRadius: 0,
-      },
-      img: {
-        height: 225,
-      },
-      imgOverlay: {
-        height: 225,
-        backgroundColor: 'transparent',
-      },
-      content: {
-        paddingHorizontal: 14,
-      },
-      footer: {
-        paddingTop: 15,
-        paddingBottom: 0,
-        paddingVertical: 7.5,
-        paddingHorizontal: 0,
-      },
-    });
-  
-  
-    RkTheme.setType('RkCard', 'imgBlock', {
-      img: {
-        height: 235,
-      },
-      header: {
-        padding: 0,
-        paddingVertical: 13,
-        paddingHorizontal: 16,
-      },
-      imgOverlay: {
-        height: -1,
-      },
-      footer: {
-        paddingTop: 18,
-        paddingBottom: 15,
-        paddingVertical: 0,
-        paddingHorizontal: 0,
-      },
-    });
-  
     RkTheme.setType('RkCard', 'horizontal', {
       container: {
         flexDirection: 'row',
-        height: 110,
+        height: 140,
       },
       content: {
         flex: 1,
@@ -397,83 +337,9 @@ import {
       img: {
         height: null,
         flex: -1,
-        width: 120,
+        width: 110,
       },
     });
   
-    RkTheme.setType('RkCard', 'blog', {
-      header: {
-        paddingHorizontal: 16,
-        paddingVertical: 0,
-        paddingTop: 16,
-      },
-      content: {
-        padding: 0,
-        paddingVertical: 0,
-        paddingTop: 12,
-      },
-      footer: {
-        paddingHorizontal: 16,
-        paddingTop: 15,
-        paddingBottom: 16,
-        alignItems: 'center',
-      },
-    });
-  
-    RkTheme.setType('RkCard', 'article', {
-      container: {
-        borderWidth: 0,
-        backgroundColor: 'transparent',
-      },
-      header: {
-        paddingVertical: 0,
-        paddingTop: 20,
-        paddingBottom: 16,
-        justifyContent: 'space-between',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderColor: theme => theme.colors.border.base,
-      },
-      content: {
-        padding: 16,
-        borderBottomWidth: 1,
-        borderColor: theme => theme.colors.border.base,
-      },
-      footer: {
-        paddingHorizontal: 14,
-        paddingTop: 15,
-        paddingBottom: 16,
-        alignItems: 'center',
-      },
-    });
-  
-    RkTheme.setType('RkCard', 'credit', {
-      container: {
-        borderWidth: 0,
-        borderRadius: 7,
-      },
-      header: {
-        justifyContent: 'space-between',
-        paddingHorizontal: 14,
-        alignItems: 'center',
-        paddingBottom: scaleVertical(46),
-      },
-      content: {
-        alignItems: 'center',
-        paddingVertical: 0,
-      },
-      footer: {
-        paddingBottom: scaleVertical(14),
-        paddingTop: scaleVertical(16),
-        paddingHorizontal: 14,
-        alignItems: 'flex-end',
-      },
-    });
-  
-    RkTheme.setType('RkPicker', 'highlight', {
-      highlightBorderTopColor: theme => theme.colors.border.highlight,
-      highlightBorderBottomColor: theme => theme.colors.border.highlight,
-      windowBorderColor: theme => theme.colors.border.highlight,
-    });
-      
     StatusBar.setBarStyle('dark-content', true);
   };

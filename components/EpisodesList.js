@@ -61,10 +61,10 @@ export default ({episodes, displayShowName}) => {
                   {moment(item.published).fromNow()}
                 </RkText>
               </View>
-              <RkText numberOfLines={1} rkType='header6'>{item.title}</RkText>
-              <RkText style={styles.post} numberOfLines={displayShowName ? 2 : 4} rkType='secondary5'>{item.description}</RkText>
+              <RkText numberOfLines={3} rkType='header6'>{item.title}</RkText>
+              
               <View style={{flexDirection: "row"}}>
-                <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('more')}</RkText>
+                <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
                 <Icon name={`${iconPrefix}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
               </View>
               { displayShowName && <RkText style={styles.showName} numberOfLines={1} rkType='secondary7'>{item.showName}</RkText> }     

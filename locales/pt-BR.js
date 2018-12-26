@@ -4,6 +4,5 @@ export default {
     "feed": "Feed",
     "later": "depois",
     "delete": "excluir",
-    "details": "detalhes",
-    "more": "mais"
+    "summary and notes": "resumo e notas",
 }

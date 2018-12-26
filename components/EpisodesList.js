@@ -5,6 +5,7 @@ import {
   Image,
   View,
   TouchableOpacity,
+  TouchableHighlight,
   Text
 } from 'react-native';
 
@@ -27,48 +28,52 @@ export default ({episodes, displayShowName}) => {
 
   renderItem = ({ item }) => (
     
-    <SwipeRow
-        rightOpenValue={-150}
-        previewOpenDelay={3000}
-        disableRightSwipe={true}
-        preview={false}
-      >
-        <View style={styles.rowBack}>
-          <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]}>
-            <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
-              <Icon name={`${iconPrefix}-add`} size={25} color="white" />
-              <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]}>
-            <Icon name={`${iconPrefix}-trash`} size={25} color="white" />
-            <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <RkCard rkType='horizontal' style={styles.card}>
-          <Image rkCardImg source={{uri: item.image}} />
-          <View rkCardContent>
-            <View style={styles.showDate}>
-              <RkText rkType='secondary6 hintColor'>
-                {formatDuration(item.duration)}
-              </RkText>
-              <RkText rkType='secondary6 hintColor'>
-                {moment(item.published).fromNow()}
-              </RkText>
-            </View>
-            <RkText numberOfLines={1} rkType='header6'>{item.title}</RkText>
-            <RkText style={styles.post} numberOfLines={displayShowName ? 2 : 4} rkType='secondary5'>{item.description}</RkText>
-            <View style={{flexDirection: "row"}}>
-              <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('more')}</RkText>
-              <Icon name={`${iconPrefix}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
-            </View>
-            { displayShowName && <RkText style={styles.showName} numberOfLines={1} rkType='secondary7'>{item.showName}</RkText> }     
-            <View style={styles.separatorBorder}></View>
+    <TouchableHighlight>
+      <SwipeRow
+          rightOpenValue={-150}
+          previewOpenDelay={3000}
+          disableRightSwipe={true}
+          preview={false}
+          directionalDistanceChangeThreshold={0}
+          swipeToOpenPercent={20}
+        >
+          <View style={styles.rowBack}>
+            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]}>
+              <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
+                <Icon name={`${iconPrefix}-add`} size={25} color="white" />
+                <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]}>
+              <Icon name={`${iconPrefix}-trash`} size={25} color="white" />
+              <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
+            </TouchableOpacity>
           </View>
-        </RkCard>
 
-      </SwipeRow>
+          <RkCard rkType='horizontal' style={styles.card}>
+            <Image rkCardImg source={{uri: item.image}} />
+            <View rkCardContent>
+              <View style={styles.showDate}>
+                <RkText rkType='secondary6 hintColor'>
+                  {formatDuration(item.duration)}
+                </RkText>
+                <RkText rkType='secondary6 hintColor'>
+                  {moment(item.published).fromNow()}
+                </RkText>
+              </View>
+              <RkText numberOfLines={1} rkType='header6'>{item.title}</RkText>
+              <RkText style={styles.post} numberOfLines={displayShowName ? 2 : 4} rkType='secondary5'>{item.description}</RkText>
+              <View style={{flexDirection: "row"}}>
+                <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('more')}</RkText>
+                <Icon name={`${iconPrefix}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
+              </View>
+              { displayShowName && <RkText style={styles.showName} numberOfLines={1} rkType='secondary7'>{item.showName}</RkText> }     
+              <View style={styles.separatorBorder}></View>
+            </View>
+          </RkCard>
+          
+        </SwipeRow>
+      </TouchableHighlight>
     
   );
 

@@ -1,5 +1,5 @@
 import { RhelenaPresentationModel } from 'rhelena';
-import feedService from '../data/feed';
+import feedService from '../../data/feed';
 
 export default class FeedScreenModel extends RhelenaPresentationModel {
     constructor() {

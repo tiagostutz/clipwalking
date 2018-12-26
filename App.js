@@ -1,6 +1,6 @@
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
-import FeedScreen from './screens/FeedScreen'
-import LibraryScreen from './screens/LibraryScreen'
+import FeedScreen from './screens/feed/FeedScreen'
+import LibraryScreen from './screens/library/LibraryScreen'
 import { bootstrap } from './config/bootstrap';
 
 bootstrap();

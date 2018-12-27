@@ -46,7 +46,7 @@ export default class FeedScreen extends React.Component {
       }
       <Player />
     </View>
-  );
+  )
 }
 
 

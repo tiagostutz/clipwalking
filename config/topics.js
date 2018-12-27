@@ -1,7 +1,18 @@
 const charol = require('charol')
 let topics = {
-    tracks: {
-        play: null
+    episodes: {
+        list: {
+            select: {
+                set: null
+            }
+        }
+    },
+    player: {
+        actionBar: {
+            play: {
+                set: null
+            }
+        }
     }
 }
 topics = charol(topics)

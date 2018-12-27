@@ -1,8 +1,11 @@
 export default {
-    "shows": "Programas",
-    "library": "Biblioteca",
+    "delete": "excluir",
     "feed": "Feed",
     "later": "depois",
-    "delete": "excluir",
+    "library": "Biblioteca",
+    "listen later": "Ouvir depois",
+    "on hold": "Em espera",
+    "shows": "Programas",
     "summary and notes": "resumo e notas",
+    "waiting": "Aguardando"
 }

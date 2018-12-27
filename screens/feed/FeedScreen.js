@@ -26,10 +26,6 @@ export default class FeedScreen extends React.Component {
     tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}-radio`} color={tintColor} size={25}/>
   };
 
-  constructor(props) {
-    super(props)
-  }
-
   componentWillMount() {
     attachModelToView(new FeedScreenModel(), this)
   }

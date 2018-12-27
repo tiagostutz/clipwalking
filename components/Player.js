@@ -27,6 +27,9 @@ export default class Player extends Component {
     componentWillMount() {
         attachModelToView(new PlayerModel(this.props), this)
     }
+    componentWillUnmount() {
+        this.viewModel.clean()
+    }
 
     render() {
         return (

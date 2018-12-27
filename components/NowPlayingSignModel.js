@@ -20,4 +20,8 @@ export default class NowPlayingSignModel extends RhelenaPresentationModel {
             }
         })
     }
+
+    clean() {
+        manuh.unsubscribe(topics.player.actionBar.play.set,`NowPlayingSignModel-${this.episode.id}`)
+    }
 }

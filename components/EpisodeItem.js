@@ -74,28 +74,32 @@ export default class EpisodeItem extends Component {
                 <TouchableHighlight onPress={this.onCardPress}>
                     <RkCard rkType='horizontal'>
                         <Image rkCardImg source={{uri: this.state.episode.image}} />
-                        <View rkCardContent>
-                            <View style={styles.showDate}>
-                                <View style={{flexDirection: "row"}}>
+                        <View rkCardContent  style={{flexDirection: "column", justifyContent: "space-between", flex: 1}}>
+                            <View>
+                                <View style={styles.showDate}>
+                                    <View style={{flexDirection: "row"}}>
+                                        <RkText rkType='secondary6 hintColor'>
+                                            {formatDuration(this.state.episode.duration)}      
+                                        </RkText>
+                                        <NowPlayingSign episode={this.state.episode} />
+                                    </View>
                                     <RkText rkType='secondary6 hintColor'>
-                                        {formatDuration(this.state.episode.duration)}      
+                                        {moment(this.state.episode.published).fromNow()}
                                     </RkText>
-                                    <NowPlayingSign episode={this.state.episode} />
                                 </View>
-                                <RkText rkType='secondary6 hintColor'>
-                                    {moment(this.state.episode.published).fromNow()}
-                                </RkText>
+                                <RkText numberOfLines={3} rkType='header4'>{this.state.episode.title}</RkText>
+                                
+                                <TouchableOpacity onPress={this.onShowSummaryPress}>
+                                    <View style={{flexDirection: "row"}}>
+                                    <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
+                                    <Icon name={`${ICON_PREFIX}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
+                                    </View>
+                                </TouchableOpacity>
                             </View>
-                            <RkText numberOfLines={3} rkType='header6'>{this.state.episode.title}</RkText>
-                            
-                            <TouchableOpacity onPress={this.onShowSummaryPress}>
-                                <View style={{flexDirection: "row"}}>
-                                <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
-                                <Icon name={`${ICON_PREFIX}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
-                                </View>
-                            </TouchableOpacity>
-                            { this.props.displayShowName && <RkText style={styles.showName} numberOfLines={1} rkType='secondary7'>{this.state.episode.showName}</RkText> }     
-                            <View style={styles.separatorBorder}></View>
+                            <View>
+                                { this.props.displayShowName && <RkText style={styles.showName} numberOfLines={1} rkType='secondary6'>{this.state.episode.showName}</RkText> }     
+                                <View style={styles.separatorBorder}></View>
+                            </View>
                         </View>
                     </RkCard>
                 </TouchableHighlight>  

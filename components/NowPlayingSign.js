@@ -11,6 +11,9 @@ export default class NowPlayingSign extends Component {
     componentWillMount() {
         attachModelToView(new NowPlayingSignModel(this.props), this)
     }
+    componentWillUnmount() {
+        this.viewModel.clean()
+    }
 
     render() {
         return (

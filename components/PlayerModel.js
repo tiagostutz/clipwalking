@@ -23,10 +23,14 @@ export default class PlayerModel extends RhelenaPresentationModel {
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
             if (this.currenTrackInfo && this.currenTrackInfo.id === msg.episode.id) {
-                if (await TrackPlayer.getState() === TrackPlayer.STATE_PLAYING) { 
-                    this.pause()
-                }else{
-                    this.play()
+                try {                
+                    if (await TrackPlayer.getState() === TrackPlayer.STATE_PLAYING) { 
+                        this.pause()
+                    }else{
+                        this.play()
+                    }
+                } catch (error) {
+                    console.error(error);                    
                 }
             }else{
                 
@@ -45,65 +49,76 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }
         })
     }
+
+    clean() {
+        manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
+    }
     
     async play(trackList) {
-        
-        const playAndPublish = async () => {
-            
-            manuh.publish(topics.player.actionBar.play.set, {
-                value: 1,
-                trackInfo: this.currenTrackInfo
-            })
-            return TrackPlayer.play()
-        }
-
-        if (!this.playerReady) {
-            console.error("The player is not ready yet and hence cannot be used")            
-            return
-        }
-
-        if (!trackList && !this.currenTrackInfo) {
-            console.error("The `trackList` param cannot be empty. Please spicify a track to be played.")            
-            return
-        }else if(!trackList && this.currenTrackInfo){ //if it is just a "resume"
-            return playAndPublish()
-        }
-        
-        // before changing the track, pause the current track persisting the last position
-        await this.pause()        
-        // clear TrackPlayer queue
-        await TrackPlayer.reset()
-        // Adds tracks to the queue
-        await TrackPlayer.add(trackList)
-        
-        const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
         try {
-            const doc = await dbTrackPosition.get(trackList[0].id)                
-            await playAndPublish()
+            const playAndPublish = async () => {
             
-            TrackPlayer.seekTo(doc.position) //resume from where it stopped
-            
-        } catch (error) {
-            if (err.status === 404) { //if it is the first time this track is played
-                dbTrackPosition.put({
-                    "_id": trackList[0].id,
-                    "position": 0
+                manuh.publish(topics.player.actionBar.play.set, {
+                    value: 1,
+                    trackInfo: this.currenTrackInfo
                 })
-                playAndPublish()              
-            }else{
-                console.error(err);                    
-            }                
+                return TrackPlayer.play()
+            }
+    
+            if (!this.playerReady) {
+                console.error("The player is not ready yet and hence cannot be used")            
+                return
+            }
+    
+            if (!trackList && !this.currenTrackInfo) {
+                console.error("The `trackList` param cannot be empty. Please spicify a track to be played.")            
+                return
+            }else if(!trackList && this.currenTrackInfo){ //if it is just a "resume"
+                return playAndPublish()
+            }
+            
+            // before changing the track, pause the current track persisting the last position
+            await this.pause()        
+            // clear TrackPlayer queue
+            await TrackPlayer.reset()
+            // Adds tracks to the queue
+            await TrackPlayer.add(trackList)
+            
+            const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
+            try {
+                const doc = await dbTrackPosition.get(trackList[0].id)                
+                await playAndPublish()
+                
+                TrackPlayer.seekTo(doc.position) //resume from where it stopped
+                
+            } catch (error) {
+                if (error.status === 404) { //if it is the first time this track is played
+                    dbTrackPosition.put({
+                        "_id": trackList[0].id,
+                        "position": 0
+                    })
+                    playAndPublish()              
+                }else{
+                    console.error(error);                    
+                }                
+            }
+                        
+        } catch (error) {
+            console.error(error);                    
         }
-
     }
 
     async pause() {
-        await TrackPlayer.pause()
-        manuh.publish(topics.player.actionBar.play.set, {
-            value: 0,
-            trackInfo: this.currenTrackInfo
-        })
-        return this.persistCurrentTrackState()
+        try {
+            await TrackPlayer.pause()
+            manuh.publish(topics.player.actionBar.play.set, {
+                value: 0,
+                trackInfo: this.currenTrackInfo
+            })
+            return this.persistCurrentTrackState()            
+        } catch (error) {
+            console.error(error);        
+        }
     }
 
     async fastForwardByAmount(amount=15) {
@@ -114,30 +129,34 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async persistCurrentTrackState() {
-        const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
-        const currentPlayerTrackID = await TrackPlayer.getCurrentTrack()    
-        if (currentPlayerTrackID) {
-            try {                
-                const doc = await dbTrackPosition.get(currentPlayerTrackID)
-                return dbTrackPosition.put({
-                        "_id": currentPlayerTrackID,
-                        "position": await TrackPlayer.getPosition(),
-                        "_rev": doc._rev
-                    });
-            } catch (error) {
-                if (error.status === 404) {
+        try {
+            const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
+            const currentPlayerTrackID = await TrackPlayer.getCurrentTrack()    
+            if (currentPlayerTrackID) {
+                try {                
+                    const doc = await dbTrackPosition.get(currentPlayerTrackID)
                     return dbTrackPosition.put({
-                        "_id": currentPlayerTrackID,
-                        "position": await TrackPlayer.getPosition(),
-                    });
+                            "_id": currentPlayerTrackID,
+                            "position": await TrackPlayer.getPosition(),
+                            "_rev": doc._rev
+                        });
+                } catch (error) {
+                    if (error.status === 404) {
+                        return dbTrackPosition.put({
+                            "_id": currentPlayerTrackID,
+                            "position": await TrackPlayer.getPosition(),
+                        });
+                    }
+    
+                    console.error(error);                
+                    return null
                 }
-
-                console.error(error);                
-                return null
+    
             }
-
+            return null            
+        } catch (error) {
+            console.error(error);         
         }
-        return null
     }
 
     // NOT YET USED

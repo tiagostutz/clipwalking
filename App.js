@@ -1,13 +1,13 @@
 import { createBottomTabNavigator, createAppContainer } from 'react-navigation';
 import FeedScreen from './screens/feed/FeedScreen'
-import LibraryScreen from './screens/library/LibraryScreen'
+import ShowsScreen from './screens/shows/ShowsScreen'
 import { bootstrap } from './config/bootstrap';
 
 bootstrap();
 
 const TabNavigator = createBottomTabNavigator({
   Feed: FeedScreen,
-  Library: LibraryScreen,
+  Shows: ShowsScreen,
 },
 {
   tabBarOptions: {

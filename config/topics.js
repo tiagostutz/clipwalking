@@ -4,6 +4,16 @@ let topics = {
         list: {
             select: {
                 set: null
+            },
+            remove: {
+                set: null
+            }
+        }
+    },
+    waiting: {
+        list: {
+            add: {
+                set: null
             }
         }
     },

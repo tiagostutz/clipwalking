@@ -17,6 +17,7 @@ import {
     TouchableHighlight,
     Text
 } from 'react-native';
+import imageCacheHoc from 'react-native-image-cache-hoc';
   
 import { formatDuration } from '../utils/text'
 import t from '../locales'
@@ -26,6 +27,7 @@ import NowPlayingSign from './NowPlayingSign'
 
 import EpisodeItemModel from './EpisodeItemModel'
 
+const CacheableImage = imageCacheHoc(Image);
 export default class EpisodeItem extends Component {
 
     constructor(props) {
@@ -46,7 +48,7 @@ export default class EpisodeItem extends Component {
     onShowSummaryPress = () => console.log('=+++==>')
 
     render = () => (
-        
+        this.state.episode && 
         <SwipeRow
             onRowDidOpen={() => this.isRowOpened = true}
             onRowDidClose={() => this.isRowOpened = false}
@@ -58,13 +60,13 @@ export default class EpisodeItem extends Component {
             swipeToOpenPercent={20}
         >
             <View style={styles.rowBack}>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]}>
+            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
                 <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
                 <Icon name={`${ICON_PREFIX}-add`} size={25} color="white" />
                 <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
                 </View>
             </TouchableOpacity>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]}>
+            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeEpisode()}>
                 <Icon name={`${ICON_PREFIX}-trash`} size={25} color="white" />
                 <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
             </TouchableOpacity>
@@ -73,7 +75,7 @@ export default class EpisodeItem extends Component {
             <View style={styles.card}>
                 <TouchableHighlight onPress={this.onCardPress}>
                     <RkCard rkType='horizontal'>
-                        <Image rkCardImg source={{uri: this.state.episode.image}} />
+                        <CacheableImage rkCardImg source={{uri: this.state.episode.image}} permanent={false} />
                         <View rkCardContent  style={{flexDirection: "column", justifyContent: "space-between", flex: 1}}>
                             <View>
                                 <View style={styles.showDate}>

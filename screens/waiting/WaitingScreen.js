@@ -1,25 +1,26 @@
-import React, { Component } from 'react'
-import { attachModelToView } from 'rhelena'
+import React from 'react';
 
 import {
-    View,
-    FlatList
+  View,
+  FlatList
 } from 'react-native';
+
 import {
   RkText,
   RkStyleSheet,
 } from 'react-native-ui-kitten';
  
 import Icon from 'react-native-vector-icons/Ionicons'
-
-import ListenLaterScreenModel from './ListenLaterScreenModel'
+import { attachModelToView } from 'rhelena'
 
 import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
+import Player from '../../components/Player'
 
-export default class ListenLaterScreen extends Component {
+import WaitingScreenModel from './WaitingScreenModel'
 
+export default class WaitingScreen extends React.Component {
 
     static navigationOptions = {
         title: t('waiting'),
@@ -27,34 +28,40 @@ export default class ListenLaterScreen extends Component {
     }
 
     componentWillMount() {
-        attachModelToView(new ListenLaterScreenModel(), this)
+        attachModelToView(new WaitingScreenModel(), this)
+    }
+
+    componentWillUnmount() {
+      this.viewModel.clean()
     }
 
     render = () => (
         <View style={styles.screen}>
           <RkText style={styles.title} rkType='header0'>{t('waiting')}</RkText>
     
-          { this.state.listenLaterData && this.state.listenLaterData.length > 0 && 
+          { this.state.waitingData && this.state.waitingData.length > 0 && 
             <View>
               <FlatList
-                data={this.state.listenLaterData}
+                data={this.state.waitingData}
                 renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
                 keyExtractor={(item) => `${item.id}`}
                 style={styles.listContainer}
               />
             </View>
           }
+          <Player />
         </View>
       )
 }
 
-const styles = RkStyleSheet.create(theme => ({
+  const styles = RkStyleSheet.create(theme => ({
     listContainer: {
       backgroundColor: theme.colors.screen.scroll,
     },
     screen: {
       marginTop: 40,
-      paddingHorizontal: 14
+      paddingHorizontal: 14,
+      marginBottom: 120
     },
     title: {
       marginBottom: 12,

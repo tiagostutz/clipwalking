@@ -5,9 +5,9 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
     constructor() {
         super();
         this.feedData = []
-        feedService.fetch((result, err) => {
+        feedService.getLastUpdate((result, err) => {
             if (err) {
-                return console.error("Erro ao recuperar... panic!");                
+                return console.error(err)                
             }
             this.feedData = result
         })

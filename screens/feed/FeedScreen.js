@@ -14,11 +14,11 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
 
 import EpisodeItem from '../../components/EpisodeItem'
-import FeedScreenModel from './FeedScreenModel'
 import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
-
 import Player from '../../components/Player'
+
+import FeedScreenModel from './FeedScreenModel'
 export default class FeedScreen extends React.Component {
 
   static navigationOptions = {
@@ -56,7 +56,8 @@ const styles = RkStyleSheet.create(theme => ({
   },
   screen: {
     marginTop: 40,
-    paddingHorizontal: 14
+    paddingHorizontal: 14,
+    marginBottom: 120
   },
   title: {
     marginBottom: 12,

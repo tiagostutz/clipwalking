@@ -5,23 +5,22 @@ import {
     RkText,
     RkCard,
     RkStyleSheet,
-} from 'react-native-ui-kitten';
-import { SwipeRow } from 'react-native-swipe-list-view';
+} from 'react-native-ui-kitten'
+import { SwipeRow } from 'react-native-swipe-list-view'
 import Icon from 'react-native-vector-icons/Ionicons'
+import { ICON_PREFIX } from '../config/variables'
 import moment from 'moment'
 
 import {
     Image,
     View,
     TouchableOpacity,
-    TouchableHighlight,
-    Text
+    TouchableHighlight
 } from 'react-native';
 import imageCacheHoc from 'react-native-image-cache-hoc';
   
 import { formatDuration } from '../utils/text'
 import t from '../locales'
-import { ICON_PREFIX } from '../config/variables'
 
 import NowPlayingSign from './NowPlayingSign'
 
@@ -64,12 +63,12 @@ export default class EpisodeItem extends Component {
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
                     <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
                     <Icon name={`${ICON_PREFIX}-add`} size={25} color="white" />
-                    <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
+                    <RkText style={styles.backRightBtnLabel}>{t('later')}</RkText>
                     </View>
                 </TouchableOpacity>}
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeEpisode()}>
                     <Icon name={`${ICON_PREFIX}-trash`} size={25} color="white" />
-                    <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
+                    <RkText style={styles.backRightBtnLabel}>{t('delete')}</RkText>
                 </TouchableOpacity>
             </View>
 

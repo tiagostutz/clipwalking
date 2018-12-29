@@ -7,16 +7,17 @@ import {
 
 import {
   RkText,
-  RkStyleSheet,
 } from 'react-native-ui-kitten';
  
 import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
 
+import { listScreenStyle } from '../../config/styles'
+
+import Player from '../../components/Player'
 import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
-import Player from '../../components/Player'
 
 import FeedScreenModel from './FeedScreenModel'
 export default class FeedScreen extends React.Component {
@@ -31,36 +32,19 @@ export default class FeedScreen extends React.Component {
   }
 
   render = () => (
-    <View style={styles.screen}>
-      <RkText style={styles.title} rkType='header0'>{t('feed')}</RkText>
-
-      { this.state.feedData && this.state.feedData.length > 0 && 
-        <View>
+    <View style={listScreenStyle.screen}>
+      <View style={listScreenStyle.content}>
+        <RkText style={listScreenStyle.title} rkType='header0'>{t('feed')}</RkText>
+        { this.state.feedData && this.state.feedData.length > 0 && 
           <FlatList
             data={this.state.feedData}
             renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
             keyExtractor={(item) => `${item.id}`}
-            style={styles.listContainer}
+            style={listScreenStyle.listContainer}
           />
-        </View>
-      }
+        } 
+      </View>
       <Player />
     </View>
   )
 }
-
-
-const styles = RkStyleSheet.create(theme => ({
-  listContainer: {
-    backgroundColor: theme.colors.screen.scroll,
-  },
-  screen: {
-    marginTop: 40,
-    paddingHorizontal: 14,
-    marginBottom: 120
-  },
-  title: {
-    marginBottom: 12,
-    marginTop: 8,
-  }
-}))

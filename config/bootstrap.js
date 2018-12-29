@@ -1,6 +1,5 @@
 import {
     StatusBar,
-    StyleSheet,
   } from 'react-native';
   import { KittenTheme } from './theme';
   import { RkTheme } from 'react-native-ui-kitten';

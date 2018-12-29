@@ -12,27 +12,31 @@ AppRegistry.registerComponent(appName, () => App);
 
 let bufferHandler = null
 TrackPlayer.registerEventHandler(async event => {
-    // stop/paused
-    if (event.state === STATE_PAUSED || event.state === STATE_STOPPED) {
-        clearInterval(bufferHandler)
-        manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
-        manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
+    setTimeout(async() => { //put a bit of delay to prevent showing unecessary loading signals
 
-    // buffering
-    }else if (event.state === STATE_BUFFERING && await TrackPlayer.getBufferedPosition() === 0) {
-        manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )    
-        clearInterval(bufferHandler)
-        bufferHandler = setInterval(async () =>  {
-            if (await TrackPlayer.getState() === STATE_PLAYING && await TrackPlayer.getBufferedPosition() > 0) {
-                manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
-                manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )
-                clearInterval(bufferHandler)
-            }
-        }, 1000)        
+        // stop/paused
+        if (event.state === STATE_PAUSED || event.state === STATE_STOPPED) {
+            clearInterval(bufferHandler)
+            manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
+            manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
+
+        // buffering
+        }else if (event.state === STATE_BUFFERING && await TrackPlayer.getBufferedPosition() === 0) {
+            manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )    
+            clearInterval(bufferHandler)
+            bufferHandler = setInterval(async () =>  {
+                if (await TrackPlayer.getState() === STATE_PLAYING && await TrackPlayer.getBufferedPosition() > 0) {
+                    manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )
+                    manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
+                    clearInterval(bufferHandler)
+                }
+            }, 500)        
+            
+        // playing
+        }else if (event.state === STATE_PLAYING && await TrackPlayer.getBufferedPosition() > 0) {
+            manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )
+            manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
+        }
         
-    // playing
-    }else if (event.state === STATE_PLAYING && await TrackPlayer.getBufferedPosition() > 0) {
-        manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
-        manuh.publish(topics.player.runtime.play.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )
-    }
+    }, 100)
 })

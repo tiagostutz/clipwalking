@@ -1,5 +1,5 @@
 import { RhelenaPresentationModel } from 'rhelena';
-import TrackPlayer from 'react-native-track-player';
+import TrackPlayer, { STATE_PLAYING } from 'react-native-track-player';
 import PouchDB from 'pouchdb-react-native'
 import manuh from 'manuh'
 
@@ -13,19 +13,26 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
         this.currenTrackInfo = null
         this.playerReady = false
+        this.isPlaying = false
         
         // Initialize the player
         TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
             this.playerReady = true
         });
 
+        manuh.unsubscribe(topics.player.runtime.play.set, "PlayModel")
+        manuh.subscribe(topics.player.runtime.play.set, "PlayModel", async msg => {
+            this.isPlaying = msg.value === 1
+        })
+
         // listen for current track changed event
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
             if (this.currenTrackInfo && this.currenTrackInfo.id === msg.episode.id) {
-                try {                
-                    if (await TrackPlayer.getState() === TrackPlayer.STATE_PLAYING) { 
+                try {                                 
+                    const currentTrackState = await TrackPlayer.getState()   
+                    if (currentTrackState === TrackPlayer.STATE_PLAYING || currentTrackState === TrackPlayer.STATE_BUFFERING) { 
                         this.pause()
                     }else{
                         this.play()
@@ -36,9 +43,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }else{
                 
                 this.currenTrackInfo = msg.episode
-                assetService.storeAudio(msg.episode.url, audioPath => {
-                    console.log('++++=== TRACK TO PLAY', audioPath);
-                    
+                assetService.storeAudio(msg.episode.url, audioPath => {                    
                     const trackToPlay = {
                         "id": msg.episode.id,
                         "url": audioPath,
@@ -65,7 +70,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async play(trackList) {
         try {
             const playAndPublish = async () => {
-                return TrackPlayer.play()
+                TrackPlayer.play()
+                return
             }
     
             if (!this.playerReady) {

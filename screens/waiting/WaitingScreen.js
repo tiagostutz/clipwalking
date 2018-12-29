@@ -7,11 +7,12 @@ import {
 
 import {
   RkText,
-  RkStyleSheet,
 } from 'react-native-ui-kitten';
  
 import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
+
+import { listScreenStyle } from '../../config/styles'
 
 import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
@@ -36,35 +37,21 @@ export default class WaitingScreen extends React.Component {
     }
 
     render = () => (
-        <View style={styles.screen}>
-          <RkText style={styles.title} rkType='header0'>{t('waiting')}</RkText>
-    
-          { this.state.waitingData && this.state.waitingData.length > 0 && 
-            <View>
-              <FlatList
-                data={this.state.waitingData}
-                renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
-                keyExtractor={(item) => `${item.id}`}
-                style={styles.listContainer}
-              />
-            </View>
-          }
-          <Player />
-        </View>
-      )
-}
+      <View style={listScreenStyle.screen}>
+        <View style={listScreenStyle.content}>
 
-  const styles = RkStyleSheet.create(theme => ({
-    listContainer: {
-      backgroundColor: theme.colors.screen.scroll,
-    },
-    screen: {
-      marginTop: 40,
-      paddingHorizontal: 14,
-      marginBottom: 120
-    },
-    title: {
-      marginBottom: 12,
-      marginTop: 8,
-    }
-  }))
+          <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
+          { this.state.waitingData && this.state.waitingData.length > 0 && 
+            <FlatList
+              data={this.state.waitingData}
+              renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
+              keyExtractor={(item) => `${item.id}`}
+              style={listScreenStyle.listContainer}
+            />
+          }
+        </View>
+        <Player />
+        
+      </View>
+    )
+}

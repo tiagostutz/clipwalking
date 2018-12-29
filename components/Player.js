@@ -1,25 +1,21 @@
-
-
-
-// var track = {
-//     id: 'unique track id',
-    
-//     url: 'http://traffic.libsyn.com/marketingcompanion/MarkNov9Final.mp3', // Load media from the network
-
-//     title: 'Avaritia',
-//     artist: 'deadmau5',
-//     album: 'while(1<2)',
-//     genre: 'Progressive House, Electro House',
-//     date: '2014-05-20T07:00:00+00:00', // RFC 3339
-    
-//     artwork: 'http://static.libsyn.com/p/assets/c/b/7/3/cb737d72e2215635/marketingcompanion3.jpg', // Load artwork from the network
-// }
-
 import React, { Component } from 'react'
+
+import { playerStyles } from '../config/styles'
+
 import { attachModelToView } from 'rhelena'
 import {
-    View
+    View,
+    TouchableOpacity
 } from 'react-native'
+
+import {
+    RkText
+} from 'react-native-ui-kitten'
+
+import Icon from 'react-native-vector-icons/Ionicons'
+import { ICON_PREFIX } from '../config/variables'
+
+import ProgressBar from './ProgressBar'
 import PlayerModel from './PlayerModel'
 
 export default class Player extends Component {
@@ -32,8 +28,26 @@ export default class Player extends Component {
     }
 
     render() {
+        const iconSize = 24
+        const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}-play` : `${ICON_PREFIX}-pause`
         return (
-            <View></View>
+            this.state.currenTrackInfo &&
+            <View style={playerStyles.floating.container}>
+                <ProgressBar />
+                <View style={playerStyles.floating.body}>
+                    <TouchableOpacity>
+                        <Icon name={`${ICON_PREFIX}-arrow-up`}  size={iconSize} color="grey" />
+                    </TouchableOpacity>
+                    <View style={playerStyles.floating.trackInfo}>
+                        <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
+                        <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
+                    </View>
+                    <TouchableOpacity>
+                        <Icon name={iconPlay} size={iconSize} color="grey" />
+                    </TouchableOpacity>
+                </View>
+            </View>
+            
         )
     }
 }

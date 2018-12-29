@@ -30,6 +30,8 @@ export default class Player extends Component {
     render() {
         const iconSize = 24
         const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}-play` : `${ICON_PREFIX}-pause`
+        const playIconAction = !this.state.isPlaying ? () => this.viewModel.play() : () => this.viewModel.pause()
+        
         return (
             this.state.currenTrackInfo &&
             <View style={playerStyles.floating.container}>
@@ -42,7 +44,7 @@ export default class Player extends Component {
                         <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
                         <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
                     </View>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={playIconAction}>
                         <Icon name={iconPlay} size={iconSize} color="grey" />
                     </TouchableOpacity>
                 </View>

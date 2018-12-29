@@ -52,7 +52,7 @@ export default class EpisodeItem extends Component {
         <SwipeRow
             onRowDidOpen={() => this.isRowOpened = true}
             onRowDidClose={() => this.isRowOpened = false}
-            rightOpenValue={-150}
+            rightOpenValue={-150+(this.props.disableAddLater ? 75 :0)+(this.props.disableDelete ? 75 :0)}
             previewOpenDelay={3000}
             disableRightSwipe={true}
             preview={false}
@@ -60,16 +60,17 @@ export default class EpisodeItem extends Component {
             swipeToOpenPercent={20}
         >
             <View style={styles.rowBack}>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
-                <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
-                <Icon name={`${ICON_PREFIX}-add`} size={25} color="white" />
-                <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeEpisode()}>
-                <Icon name={`${ICON_PREFIX}-trash`} size={25} color="white" />
-                <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
-            </TouchableOpacity>
+                {!this.props.disableAddLater &&
+                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
+                    <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
+                    <Icon name={`${ICON_PREFIX}-add`} size={25} color="white" />
+                    <Text style={styles.backRightBtnLabel}>{t('later')}</Text>
+                    </View>
+                </TouchableOpacity>}
+                <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeEpisode()}>
+                    <Icon name={`${ICON_PREFIX}-trash`} size={25} color="white" />
+                    <Text style={styles.backRightBtnLabel}>{t('delete')}</Text>
+                </TouchableOpacity>
             </View>
 
             <View style={styles.card}>
@@ -127,20 +128,20 @@ const styles = RkStyleSheet.create(theme => ({
           flexDirection: 'row',
           justifyContent: 'space-between',
       paddingLeft: 15,
-      height: 130,
+      height: 135,
       marginVertical: 8,
     },
     backRightBtn: {
-          alignItems: 'center',
-          bottom: 0,
-          justifyContent: 'center',
-          position: 'absolute',
-          top: 0,
-          width: 75
-      },
-      backRightBtnLeft: {
-          backgroundColor: 'blue',
-          right: 75
+        alignItems: 'center',
+        bottom: 0,
+        justifyContent: 'center',
+        position: 'absolute',
+        top: 0,
+        width: 75
+    },
+    backRightBtnLeft: {
+        backgroundColor: 'blue',
+        right: 75
     },
     backRightBtnRight: {
           backgroundColor: 'red',

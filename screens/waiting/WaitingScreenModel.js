@@ -20,7 +20,12 @@ export default class WaitingScreenModel extends RhelenaPresentationModel {
         manuh.subscribe(topics.waiting.list.add.set, "WaitingScreenModel", msg => {
             let newWaitingList = this.waitingData.slice()
             newWaitingList.push(msg.episode)
-            this.waitingData = newWaitingList
+            this.waitingData = newWaitingList.sort((a,b) => new Date(b.published)-new Date(a.published))
+        })
+
+        manuh.unsubscribe(topics.episodes.list.remove.set, "WaitingScreenModel")
+        manuh.subscribe(topics.episodes.list.remove.set, "WaitingScreenModel", msg => {
+            feedService.removeFromWaiting(msg.episode.id)
         })
     }
 

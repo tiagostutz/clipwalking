@@ -43,7 +43,7 @@ export default class WaitingScreen extends React.Component {
             <View>
               <FlatList
                 data={this.state.waitingData}
-                renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
+                renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
                 keyExtractor={(item) => `${item.id}`}
                 style={styles.listContainer}
               />

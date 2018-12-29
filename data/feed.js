@@ -45,8 +45,8 @@ const feedData = {
     getLastUpdate: async (callback) => {
         // ** TEST PORPUSE ONLY
         // await new PouchDB(DB_FEED_FULL).destroy()
-        await new PouchDB(DB_FEED_REMOVED).destroy()
-        await new PouchDB(DB_FEED_WAITING).destroy()
+        // await new PouchDB(DB_FEED_REMOVED).destroy()
+        // await new PouchDB(DB_FEED_WAITING).destroy()
         // -- ** TEST PORPUSE ONLY
 
         const dbFeedFull = new PouchDB(DB_FEED_FULL)

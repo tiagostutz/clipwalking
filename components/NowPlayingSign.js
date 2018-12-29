@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import { attachModelToView } from 'rhelena'
+import { View, ActivityIndicator } from 'react-native'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 import { ICON_PREFIX } from '../config/variables'
-import Icon from 'react-native-vector-icons/Ionicons'
 
 import NowPlayingSignModel from './NowPlayingSignModel'
 
@@ -17,7 +18,10 @@ export default class NowPlayingSign extends Component {
 
     render() {
         return (
-            this.state.isPlaying && <Icon name={`${ICON_PREFIX}-play-circle`} style={{marginLeft: 6}} size={14}/>
+            <View>
+                { this.state.isPlaying && <Icon name={`${ICON_PREFIX}-play-circle`} style={{marginLeft: 5}} size={15}/> }                
+                { this.state.isBuffering &&  <ActivityIndicator style={{marginLeft: 5, marginTop: -4}} size="small"/> }
+            </View>
         )
     }
 }

@@ -18,7 +18,10 @@ let topics = {
         }
     },
     player: {
-        actionBar: {
+        runtime: {
+            buffer: {
+                set: null
+            },
             play: {
                 set: null
             }

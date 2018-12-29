@@ -3,6 +3,7 @@ import TrackPlayer from 'react-native-track-player';
 import PouchDB from 'pouchdb-react-native'
 import manuh from 'manuh'
 
+import assetService from '../data/assets'
 import topics from '../config/topics'
 import { DB_TRACK_POSITION } from '../config/variables'
 
@@ -35,17 +36,24 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }else{
                 
                 this.currenTrackInfo = msg.episode
-                const trackToPlay = {
-                    "id": msg.episode.id,
-                    "url": msg.episode.url,
-                    "title": msg.episode.title,
-                    "artist": msg.episode.author ? msg.episode.author : "Unknown artist",
-                    "album": msg.episode.showName,
-                    "artwork": msg.episode.image,
-                    "description": msg.episode.description
-                }
-                
-                this.play([trackToPlay])
+                assetService.storeAudio(msg.episode.url, audioPath => {
+                    console.log('++++=== TRACK TO PLAY', audioPath);
+                    
+                    const trackToPlay = {
+                        "id": msg.episode.id,
+                        "url": audioPath,
+                        "title": msg.episode.title,
+                        "artist": msg.episode.author ? msg.episode.author : "Unknown artist",
+                        "album": msg.episode.showName,
+                        "artwork": msg.episode.image,
+                        "description": msg.episode.description
+                    }
+                    
+                    this.play([trackToPlay])
+                })
+                // notify that the buffer has started
+                manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: msg.episode.id})
+
             }
         })
     }
@@ -57,11 +65,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async play(trackList) {
         try {
             const playAndPublish = async () => {
-            
-                manuh.publish(topics.player.actionBar.play.set, {
-                    value: 1,
-                    trackInfo: this.currenTrackInfo
-                })
                 return TrackPlayer.play()
             }
     
@@ -111,10 +114,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async pause() {
         try {
             await TrackPlayer.pause()
-            manuh.publish(topics.player.actionBar.play.set, {
-                value: 0,
-                trackInfo: this.currenTrackInfo
-            })
             return this.persistCurrentTrackState()            
         } catch (error) {
             console.error(error);        

@@ -32,24 +32,31 @@ export default class Player extends Component {
         const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}-play` : `${ICON_PREFIX}-pause`
         const playIconAction = !this.state.isPlaying ? () => this.viewModel.play() : () => this.viewModel.pause()
         
-        return (
-            this.state.currenTrackInfo &&
-            <View style={playerStyles.floating.container}>
-                <ProgressBar />
-                <View style={playerStyles.floating.body}>
-                    <TouchableOpacity>
-                        <Icon name={`${ICON_PREFIX}-arrow-up`}  size={iconSize} color="grey" />
-                    </TouchableOpacity>
-                    <View style={playerStyles.floating.trackInfo}>
-                        <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
-                        <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
-                    </View>
-                    <TouchableOpacity onPress={playIconAction}>
-                        <Icon name={iconPlay} size={iconSize} color="grey" />
-                    </TouchableOpacity>
-                </View>
-            </View>
-            
-        )
+        let playerComponent = <View></View>
+
+        if (this.state.currenTrackInfo) {
+            if (this.state.isFloatingMode) {
+                playerComponent = (
+                    this.state.currenTrackInfo &&
+                    <View style={playerStyles.floating.container}>
+                        <ProgressBar />
+                        <View style={playerStyles.floating.body}>
+                            <TouchableOpacity>
+                                <Icon name={`${ICON_PREFIX}-arrow-up`}  size={iconSize} color="black" />
+                            </TouchableOpacity>
+                            <View style={playerStyles.floating.trackInfo}>
+                                <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
+                                <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
+                            </View>
+                            <TouchableOpacity onPress={playIconAction}>
+                                <Icon name={iconPlay} size={iconSize} color="black" />
+                            </TouchableOpacity>
+                        </View>
+                    </View>            
+                )
+            }
+        }
+
+        return playerComponent
     }
 }

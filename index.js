@@ -21,7 +21,7 @@ TrackPlayer.registerEventHandler(async event => {
             manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
 
         // buffering
-        }else if (event.state === STATE_BUFFERING && await TrackPlayer.getBufferedPosition() === 0) {
+        }else if ((event.state === STATE_BUFFERING || event.state === STATE_PLAYING) && await TrackPlayer.getBufferedPosition() === 0) {
             manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 1} )    
             clearInterval(bufferHandler)
             bufferHandler = setInterval(async () =>  {

@@ -14,6 +14,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.currenTrackInfo = null
         this.playerReady = false
         this.isPlaying = false
+        this.isFloatingMode = true
         
         // Initialize the player
         TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
@@ -22,7 +23,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
         manuh.unsubscribe(topics.player.runtime.play.set, "PlayModel")
         manuh.subscribe(topics.player.runtime.play.set, "PlayModel", async msg => {
-            this.isPlaying = msg.value === 1
+            this.isPlaying = msg.value === 1            
         })
 
         // listen for current track changed event
@@ -43,6 +44,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }else{
                 
                 this.currenTrackInfo = msg.episode
+                
                 assetService.storeAudio(msg.episode.url, audioPath => {                    
                     const trackToPlay = {
                         "id": msg.episode.id,
@@ -66,12 +68,15 @@ export default class PlayerModel extends RhelenaPresentationModel {
     clean() {
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
     }
+
+    toggleMode() {
+        this.isFloatingMode = !this.isFloatingMode
+    }
     
     async play(trackList) {
         try {
-            const playAndPublish = async () => {
-                TrackPlayer.play()
-                return
+            const playAndPublish = () => {
+                return TrackPlayer.play()
             }
     
             if (!this.playerReady) {
@@ -92,10 +97,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
             await TrackPlayer.reset()
             // Adds tracks to the queue
             await TrackPlayer.add(trackList)
-            
+
             const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
             try {
-                const doc = await dbTrackPosition.get(trackList[0].id)                
+                const doc = await dbTrackPosition.get(trackList[0].id)   
                 await playAndPublish()
                 
                 TrackPlayer.seekTo(doc.position) //resume from where it stopped
@@ -111,7 +116,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                     console.error(error);                    
                 }                
             }
-                        
+            
         } catch (error) {
             console.error(error);                    
         }

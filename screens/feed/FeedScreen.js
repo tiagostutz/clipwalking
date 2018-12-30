@@ -14,7 +14,6 @@ import { attachModelToView } from 'rhelena'
 
 import { listScreenStyle } from '../../config/styles'
 
-import Player from '../../components/Player'
 import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
@@ -24,7 +23,7 @@ export default class FeedScreen extends React.Component {
 
   static navigationOptions = {
     title: t('feed'),
-    tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}-radio`} color={tintColor} size={25}/>
+    tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}radio`} color={tintColor} size={25}/>
   };
 
   componentWillMount() {
@@ -44,7 +43,7 @@ export default class FeedScreen extends React.Component {
           />
         } 
       </View>
-      <Player />
+      
     </View>
   )
 }

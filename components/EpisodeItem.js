@@ -62,12 +62,12 @@ export default class EpisodeItem extends Component {
                 {!this.props.disableAddLater &&
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnLeft]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
                     <View style={{display: "flex", flexDirection:"column", alignItems: "center", justifyContent: "center"}}>
-                    <Icon name={`${ICON_PREFIX}-add`} size={25} color="white" />
+                    <Icon name={`${ICON_PREFIX}add`} size={25} color="white" />
                     <RkText style={styles.backRightBtnLabel}>{t('later')}</RkText>
                     </View>
                 </TouchableOpacity>}
                 <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeEpisode()}>
-                    <Icon name={`${ICON_PREFIX}-trash`} size={25} color="white" />
+                    <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
                     <RkText style={styles.backRightBtnLabel}>{t('delete')}</RkText>
                 </TouchableOpacity>
             </View>
@@ -94,7 +94,7 @@ export default class EpisodeItem extends Component {
                                 <TouchableOpacity onPress={this.onShowSummaryPress}>
                                     <View style={{flexDirection: "row"}}>
                                     <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
-                                    <Icon name={`${ICON_PREFIX}-arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
+                                    <Icon name={`${ICON_PREFIX}arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
                                     </View>
                                 </TouchableOpacity>
                             </View>

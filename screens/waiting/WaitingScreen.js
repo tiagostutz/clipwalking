@@ -17,7 +17,6 @@ import { listScreenStyle } from '../../config/styles'
 import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
-import Player from '../../components/Player'
 
 import WaitingScreenModel from './WaitingScreenModel'
 
@@ -25,7 +24,7 @@ export default class WaitingScreen extends React.Component {
 
     static navigationOptions = {
         title: t('waiting'),
-        tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}-time`} color={tintColor} size={25}/>
+        tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}time`} color={tintColor} size={25}/>
     }
 
     componentWillMount() {
@@ -50,7 +49,7 @@ export default class WaitingScreen extends React.Component {
             />
           }
         </View>
-        <Player />
+        
         
       </View>
     )

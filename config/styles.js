@@ -1,6 +1,7 @@
 import {
     RkStyleSheet
 } from 'react-native-ui-kitten';
+import { ifIphoneX } from 'react-native-iphone-x-helper'
 
 module.exports.listScreenStyle = RkStyleSheet.create(theme => ({
     screen: {
@@ -26,14 +27,49 @@ module.exports.playerStyles = {
 
         container: {
             position: 'absolute', 
-            height: 45, 
+            height: 55, 
             width: "100%",
             alignItems: 'flex-start', 
             justifyContent: 'flex-start', 
             left: 0, 
-            bottom: 40, 
             backgroundColor: '#F7F7F7', 
             elevation: 8,
+            ...ifIphoneX({
+                bottom: 83
+            },{
+                bottom: 49
+            })
+        },
+        body: {
+            flex: 1, 
+            paddingHorizontal: 14,
+            flexDirection: "row", 
+            width: "100%", 
+            alignItems: "center", 
+            justifyContent: "space-between"
+        },
+        trackInfo: {
+            flex: .8, 
+            flexDirection: "column", 
+            justifyContent: "center", 
+            alignItems: "center"
+        }
+    })),
+    maximized: RkStyleSheet.create(theme => ({
+        container: {
+            position: 'absolute', 
+            height: "90%", 
+            width: "100%",
+            alignItems: 'flex-start', 
+            justifyContent: 'flex-start', 
+            left: 0, 
+            backgroundColor: '#F7F7F7', 
+            elevation: 8,
+            ...ifIphoneX({
+                bottom: 83
+            },{
+                bottom: 49
+            })
         },
         body: {
             flex: 1, 

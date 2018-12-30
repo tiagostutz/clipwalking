@@ -1,4 +1,4 @@
-module.exports.ICON_PREFIX = "ios"
+module.exports.ICON_PREFIX = "ios-"
 module.exports.DB_TRACK_POSITION = "app_clip_walking_track_position"
 module.exports.DB_FEED_FULL = "app_clip_walking_feed_full"
 module.exports.DB_FEED_REMOVED = "app_clip_walking_feed_removed"

@@ -131,13 +131,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
         }
     }
 
-    async fastForwardByAmount(amount=15) {
-        return this.seekTo(await TrackPlayer.getPosition()+amount)
-    }
-    async fastBackwardByAmount(amount=15) {
-        return this.seekTo(await TrackPlayer.getPosition()-amount)
-    }
-
     async persistCurrentTrackState() {
         try {
             const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
@@ -170,6 +163,14 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     // NOT YET USED
+
+
+    async fastForwardByAmount(amount=15) {
+        return this.seekTo(await TrackPlayer.getPosition()+amount)
+    }
+    async fastBackwardByAmount(amount=15) {
+        return this.seekTo(await TrackPlayer.getPosition()-amount)
+    }
 
     async next() {
         await this.persistCurrentTrackState()

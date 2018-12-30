@@ -11,7 +11,7 @@ export default class ShowsScreen extends React.Component {
   
   static navigationOptions = {
     title: t('shows'),
-    tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}-albums`} color={tintColor} size={25}/>
+    tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}albums`} color={tintColor} size={25}/>
   };
 
   render = () => (

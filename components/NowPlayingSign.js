@@ -19,7 +19,7 @@ export default class NowPlayingSign extends Component {
     render() {
         return (
             <View>
-                { this.state.isPlaying && <Icon name={`${ICON_PREFIX}-play-circle`} style={{marginLeft: 5}} size={15}/> }                
+                { this.state.isPlaying && <Icon name={`${ICON_PREFIX}play-circle`} style={{marginLeft: 5}} size={15}/> }                
                 { this.state.isBuffering &&  <ActivityIndicator style={{marginLeft: 5, marginTop: -4}} size="small"/> }
             </View>
         )

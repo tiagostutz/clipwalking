@@ -1,14 +1,24 @@
 /** @format */
-
+import React from 'react'
 import {AppRegistry} from 'react-native';
 import manuh from 'manuh'
 import TrackPlayer, { STATE_PAUSED, STATE_STOPPED, STATE_BUFFERING, STATE_PLAYING } from 'react-native-track-player'
 
 import App from './App';
+import Player from './components/Player'
 import {name as appName} from './app.json';
 import topics from './config/topics'
 
-AppRegistry.registerComponent(appName, () => App);
+import { View } from 'react-native'
+
+const Main = () => (
+    <View style={{flex: 1}}>
+        <App />
+        <Player />
+    </View>
+)
+
+AppRegistry.registerComponent(appName, () => Main);
 
 let bufferHandler = null
 TrackPlayer.registerEventHandler(async event => {

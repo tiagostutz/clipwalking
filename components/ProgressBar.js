@@ -9,6 +9,8 @@ import Slider from "react-native-slider";
 import { ProgressComponent } from 'react-native-track-player'
 import ProgressMarModel from './ProgressBarModel';
 
+import t from '../locales'
+
 export default class ProgressBar extends ProgressComponent {
   constructor(props) {
     super(props);
@@ -18,10 +20,14 @@ export default class ProgressBar extends ProgressComponent {
     attachModelToView(new ProgressMarModel(this.props), this)
   }
 
+  componentWillUnmount() {
+    this.viewModel.clean()
+  }
+
   render() {
 
     if (!this.state.loaded) {
-      return <View></View>
+      return <View style={{flex: 1, flexDirection: "row", justifyContent:"center"}}><RkText rkType='secondary1'>{t('loading').toUpperCase()}...</RkText></View>
     }
 
     const thumbDimension = this.state.isSliding ? 16 : 8

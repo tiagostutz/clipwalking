@@ -19,8 +19,13 @@ module.exports.storeAudio = async (url, callback) => {
             callbackParam(filePath)
         })
     }
+    
+    // ** TEST PORPUSE ONLY
+    // await new PouchDB(DB_AUDIO_FILE_PATH).destroy()
+    // -- ** TEST PORPUSE ONLY
 
-    const dbAudioFilePath = new PouchDB(DB_AUDIO_FILE_PATH)
+    const dbAudioFilePath = new PouchDB(DB_AUDIO_FILE_PATH)    
+
     try {
         const audio = await dbAudioFilePath.get(url)
         // console.log('+++=== FILE PATH',audio.filePath.replace("file://", ""));

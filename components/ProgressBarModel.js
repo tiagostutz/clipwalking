@@ -14,16 +14,35 @@ export default class ProgressMarModel extends RhelenaPresentationModel {
 
         setTimeout(() => {
             this.updateProgress()
-            this.loaded = true
         }, 100)
-        setInterval(() => this.updateProgress(), 1000)
+        this.updateHandler = setInterval(() => this.updateProgress(), 1000)
+    }
+    
+    clean(){
+        clearInterval(this.updateHandler)
     }
 
     async updateProgress() {
         const duration = await TrackPlayer.getDuration()
+        if (isNaN(duration)) {
+            this.trackPositionRate = 0   
+            this.loaded = false         
+            return
+        }
+
         this.trackPositionRate = await TrackPlayer.getPosition() / duration
+        if (isNaN(this.trackPositionRate)) {
+            this.trackPositionRate = 0            
+            this.loaded = false
+            return
+        }
+        
+        this.loaded = true
+        
+
         this.elapsed = formatElapsed(duration*this.trackPositionRate)
         this.remaining = formatElapsed(duration*(1-this.trackPositionRate))
+
     }
 
     startSliding() {

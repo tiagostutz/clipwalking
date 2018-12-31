@@ -16,6 +16,9 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.isPlaying = false
         this.isFloatingMode = false
         
+        this.clipStartPosition = null        
+        this.currentClip = null
+
         // Initialize the player
         TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
             this.playerReady = true
@@ -162,16 +165,32 @@ export default class PlayerModel extends RhelenaPresentationModel {
         }
     }
 
+    async toggleCut() {
+        if (!this.clipStartPosition) {
+            this.clipStartPosition = await TrackPlayer.getPosition()
+            this.currentClip = null
+        }else{
+            this.currentClip = {
+                start: Math.floor(this.clipStartPosition)-1,
+                end: Math.floor(await TrackPlayer.getPosition())+1
+            }
+            
+            this.clipStartPosition = null
+        }
+    }
+
+    async shareClip() {
+        if (!this.currentClip) {
+            return
+        }
+    }
     // NOT YET USED
 
 
-    async fastForwardByAmount(amount=15) {
+    async seekToByAmount(amount=15) {
         return this.seekTo(await TrackPlayer.getPosition()+amount)
     }
-    async fastBackwardByAmount(amount=15) {
-        return this.seekTo(await TrackPlayer.getPosition()-amount)
-    }
-
+   
     async next() {
         await this.persistCurrentTrackState()
         return TrackPlayer.skipToNext()

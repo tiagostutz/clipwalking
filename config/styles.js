@@ -15,6 +15,7 @@ module.exports.listScreenStyle = RkStyleSheet.create(theme => ({
     },
     listContainer: {
         backgroundColor: theme.colors.screen.scroll,
+        marginBottom: 100
     },
     title: {
         marginBottom: 12,
@@ -74,14 +75,14 @@ module.exports.playerStyles = {
         body: {
             flex: 1, 
             paddingHorizontal: 14,
-            paddingVertical: 40,
+            paddingVertical: 30,
             flexDirection: "column", 
             width: "100%", 
             alignItems: "center", 
             justifyContent: "space-between"
         },
         cover: {
-            height: 320,
+            height: 240,
             width: 420,
             flex: -1
         },
@@ -89,7 +90,7 @@ module.exports.playerStyles = {
             flex: .8, 
             flexDirection: "column", 
             justifyContent: "center", 
-            alignItems: "center"
+            alignItems: "center",
         }
     }))
 }

@@ -1,17 +1,63 @@
 import React from 'react'
-import {
-    View
-} from 'react-native'
+import { attachModelToView } from 'rhelena'
+import { View } from "react-native"
 
+import {
+  RkText
+} from 'react-native-ui-kitten'
+import Slider from "react-native-slider";
 import { ProgressComponent } from 'react-native-track-player'
+import ProgressMarModel from './ProgressBarModel';
 
 export default class ProgressBar extends ProgressComponent {
-    render() {
-      return (
-        <View style={{left: 0, height: 1, flexDirection: 'row'}}>
-          <View style={{ flex: this.getProgress(), backgroundColor: 'tomato' }} />
-          <View style={{ flex: 1 - this.getProgress(), backgroundColor: '#F0F0F0' }} />
-        </View>
-      );
-    }
+  constructor(props) {
+    super(props);
   }
+
+  componentDidMount() {
+    attachModelToView(new ProgressMarModel(this.props), this)
+  }
+
+  render() {
+
+    if (!this.state.loaded) {
+      return <View></View>
+    }
+
+    const thumbDimension = this.state.isSliding ? 16 : 8
+    const trackColor = this.state.isSliding ? "tomato" : "#777"
+    return (
+      <View style={{flexDirection: "column"}}>
+        <View style={{flexDirection: "row", justifyContent:"space-between"}}>
+          <RkText rkType='secondary7'>{this.state.elapsed}</RkText>
+          <RkText rkType='secondary7'>-{this.state.remaining}</RkText>
+        </View>
+        <Slider
+          style={{height: 20}}
+          thumbStyle={{
+            width: thumbDimension,
+            height: thumbDimension,
+            backgroundColor: trackColor,
+            borderRadius: thumbDimension / 2,
+            shadowColor: trackColor,
+            shadowOffset: {width: 0, height: 0},
+            shadowRadius: 2,
+            shadowOpacity: .4
+          }}
+          trackStyle={{
+            backgroundColor: "#D0D0D0",
+            height: 2
+          }}
+          minimumTrackTintColor={trackColor}
+          thumbTouchSize={{width: 32, height: 32}}
+          
+          value={this.state.trackPositionRate}
+          onSlidingStart={() => this.viewModel.startSliding()}
+          onSlidingComplete={() => this.viewModel.stopSliding()}
+          onValueChange={(val) => this.viewModel.setTrackPosition(val)}
+          maximumValue={1}
+        />
+      </View>
+    )
+  }
+}

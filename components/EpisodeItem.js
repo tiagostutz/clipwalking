@@ -17,8 +17,7 @@ import {
     TouchableOpacity,
     TouchableHighlight
 } from 'react-native';
-import imageCacheHoc from 'react-native-image-cache-hoc';
-  
+
 import { formatDuration } from '../utils/text'
 import t from '../locales'
 
@@ -26,6 +25,7 @@ import NowPlayingSign from './NowPlayingSign'
 
 import EpisodeItemModel from './EpisodeItemModel'
 
+import imageCacheHoc from 'react-native-image-cache-hoc';
 const CacheableImage = imageCacheHoc(Image);
 export default class EpisodeItem extends Component {
 

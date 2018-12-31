@@ -14,7 +14,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.currenTrackInfo = null
         this.playerReady = false
         this.isPlaying = false
-        this.isFloatingMode = true
+        this.isFloatingMode = false
         
         // Initialize the player
         TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {

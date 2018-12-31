@@ -6,7 +6,8 @@ import { attachModelToView } from 'rhelena'
 import {
     View,
     TouchableOpacity,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    Image
 } from 'react-native'
 
 import {
@@ -17,9 +18,13 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 import SimpleLineIcon from 'react-native-vector-icons/SimpleLineIcons'
 import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import { ICON_PREFIX } from '../config/variables'
-
+import ProgressBarMini from './ProgressBarMini'
 import ProgressBar from './ProgressBar'
 import PlayerModel from './PlayerModel'
+
+import imageCacheHoc from 'react-native-image-cache-hoc';
+const CacheableImage = imageCacheHoc(Image);
+
 
 export default class Player extends Component {
 
@@ -41,7 +46,7 @@ export default class Player extends Component {
                 playerComponent = (
                     this.state.currenTrackInfo &&                    
                     <View style={playerStyles.floating.container}>
-                        <ProgressBar />
+                        <ProgressBarMini />
                         <View style={playerStyles.floating.body}>                                
                             <TouchableWithoutFeedback onPress={() => this.viewModel.toggleMode()}>
                                 <SimpleLineIcon name={`arrow-up`}  size={21} color="black" />
@@ -66,10 +71,23 @@ export default class Player extends Component {
                     this.state.currenTrackInfo &&
                     <View style={playerStyles.maximized.container}>
                         <View style={playerStyles.maximized.body}>
+                            <TouchableWithoutFeedback onPress={() => this.viewModel.toggleMode()}>
+                                <View style={{flexDirection: "row", flex: 1, width: "100%", justifyContent: "space-between"}}>
+                                        <SimpleLineIcon name={`arrow-down`}  size={21} color="black" />
+                                    <RkText rkType='secondary5'>{this.state.currenTrackInfo.showName}</RkText>
+                                    <View></View>
+                                </View>
+                            </TouchableWithoutFeedback>
+                            <View>
+                                <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currenTrackInfo.image}} permanent={false} />
+                            </View>
                             <View style={playerStyles.floating.trackInfo}>
-                                <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
-                                <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
+                                <RkText numberOfLines={1} rkType='secondary4'>{this.state.currenTrackInfo.title}</RkText>
+                                <RkText numberOfLines={1} rkType='secondary6' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
                             </View>                            
+                            <View style={{width: "100%", flex: 1, marginTop: 20}}>
+                                <ProgressBar />
+                            </View>
                         </View>
                     </View>            
                 )

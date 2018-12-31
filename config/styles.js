@@ -58,7 +58,7 @@ module.exports.playerStyles = {
     maximized: RkStyleSheet.create(theme => ({
         container: {
             position: 'absolute', 
-            height: "90%", 
+            height: "100%", 
             width: "100%",
             alignItems: 'flex-start', 
             justifyContent: 'flex-start', 
@@ -66,18 +66,24 @@ module.exports.playerStyles = {
             backgroundColor: '#F7F7F7', 
             elevation: 8,
             ...ifIphoneX({
-                bottom: 83
+                bottom: 0
             },{
-                bottom: 49
+                bottom: 0
             })
         },
         body: {
             flex: 1, 
             paddingHorizontal: 14,
-            flexDirection: "row", 
+            paddingVertical: 40,
+            flexDirection: "column", 
             width: "100%", 
             alignItems: "center", 
             justifyContent: "space-between"
+        },
+        cover: {
+            height: 320,
+            width: 420,
+            flex: -1
         },
         trackInfo: {
             flex: .8, 

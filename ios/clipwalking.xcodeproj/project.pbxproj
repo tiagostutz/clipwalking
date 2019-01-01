@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -49,7 +50,8 @@
 		5FBEBA69713E4349A2FD9553 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = EA8826D65BCF4770A5CA5F76 /* AntDesign.ttf */; };
 		66952D9B88E54F43B103543A /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2AEAA8259F394132AC2C6069 /* Entypo.ttf */; };
 		7377BC55B2D048BDB1F072CB /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB760BA4F46E4924953EBB64 /* Ionicons.ttf */; };
-		81A5CA0C21D45F31009EA94A /* Clipnator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A5CA0B21D45F31009EA94A /* Clipnator.swift */; };
+		812FF89421DB8445003AD4F7 /* RNAudioClipper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FF89321DB8445003AD4F7 /* RNAudioClipper.swift */; };
+		812FF89621DB84F9003AD4F7 /* RNAudioClipperBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 812FF89521DB84F9003AD4F7 /* RNAudioClipperBridge.m */; };
 		82CD3C5DF2274A38A8F72FAB /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 734F367641C4437A8AE56698 /* Roboto-Bold.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		86388655834146D1847AEADE /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5535472B1FFD4211A0309575 /* Foundation.ttf */; };
@@ -426,8 +428,10 @@
 		78C398B01ACF4ADC00677621 /* RCTLinking.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTLinking.xcodeproj; path = "../node_modules/react-native/Libraries/LinkingIOS/RCTLinking.xcodeproj"; sourceTree = "<group>"; };
 		79DD3C4D908C42EDA064EF1E /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
 		7FC65F2B321F451799A8ACA5 /* Roboto-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Roboto-Medium.ttf"; path = "../assets/fonts/Roboto-Medium.ttf"; sourceTree = "<group>"; };
+		812FF89321DB8445003AD4F7 /* RNAudioClipper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = RNAudioClipper.swift; path = clipwalking/RNAudioClipper.swift; sourceTree = "<group>"; };
+		812FF89521DB84F9003AD4F7 /* RNAudioClipperBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNAudioClipperBridge.m; path = clipwalking/RNAudioClipperBridge.m; sourceTree = "<group>"; };
+		812FF89721DBB6B8003AD4F7 /* RNAudioClipperBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNAudioClipperBridge.h; path = clipwalking/RNAudioClipperBridge.h; sourceTree = "<group>"; };
 		81A5CA0A21D45F31009EA94A /* clipwalking-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "clipwalking-Bridging-Header.h"; sourceTree = "<group>"; };
-		81A5CA0B21D45F31009EA94A /* Clipnator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Clipnator.swift; path = clipwalking/Clipnator.swift; sourceTree = "<group>"; };
 		82DF8DEFE5E34185AF93659E /* RNTrackPlayer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNTrackPlayer.xcodeproj; path = "../node_modules/react-native-track-player/ios/RNTrackPlayer.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8452E160BF4D43AAAA52C607 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
@@ -598,8 +602,10 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				81A5CA0B21D45F31009EA94A /* Clipnator.swift */,
 				81A5CA0A21D45F31009EA94A /* clipwalking-Bridging-Header.h */,
+				812FF89321DB8445003AD4F7 /* RNAudioClipper.swift */,
+				812FF89521DB84F9003AD4F7 /* RNAudioClipperBridge.m */,
+				812FF89721DBB6B8003AD4F7 /* RNAudioClipperBridge.h */,
 			);
 			name = clipwalking;
 			sourceTree = "<group>";
@@ -1397,9 +1403,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81A5CA0C21D45F31009EA94A /* Clipnator.swift in Sources */,
+				812FF89621DB84F9003AD4F7 /* RNAudioClipperBridge.m in Sources */,
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				812FF89421DB8445003AD4F7 /* RNAudioClipper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

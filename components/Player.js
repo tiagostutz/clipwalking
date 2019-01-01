@@ -76,7 +76,7 @@ export default class Player extends Component {
         
         let playerComponent = <View></View>
 
-        const cutIconColor = this.state.clipStartPosition ? "tomato" : "black"
+        const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? "tomato" : "black"
         const shareCutIconColor = this.state.currentClip ? "black" : "#C0C0C0"
 
         if (this.state.currenTrackInfo) {
@@ -130,22 +130,48 @@ export default class Player extends Component {
                                 </TextTicker>
                                 <RkText numberOfLines={1} rkType='secondary3' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
                             </View>                            
-                            <View style={{width: "100%", flex: 1, marginTop: 20}}>
+                            <View style={{width: "100%", flex: 1, marginTop: 10}}>
                                 <ProgressBar />
                                 <View style={{width: "100%", flexDirection: "row", justifyContent: "space-evenly", flex: 1}}>                                    
-                                    <TouchableOpacity onPress={() => this.viewModel.toggleCut()}>
-                                        <Animated.View style={{opacity: this.state.clipStartPosition ? this.blinkOpacityValue : 1}}>
-                                            <Ionicon name={`${ICON_PREFIX}cut`} size={32} color={cutIconColor} />
-                                        </Animated.View>
-                                    </TouchableOpacity>
+                                    {!this.state.currentClip &&
+                                        <TouchableOpacity onPress={() => this.viewModel.toggleCut()}>
+                                            <Animated.View style={{
+                                                opacity: this.state.clipStartPosition && !this.state.currentClip ? this.blinkOpacityValue : (this.state.currentClip ? 0.1 : 1)
+                                            }}>
+                                                <Ionicon name={`${ICON_PREFIX}cut`} size={36} color={cutIconColor} />
+                                            </Animated.View>
+                                        </TouchableOpacity>
+                                    }
                                     {this.state.currentClip &&
-                                        <TouchableOpacity onPress={() => this.viewModel.shareClip()} disabled={!this.state.currentClip}>
-                                            <Ionicon name={`${ICON_PREFIX}trash`} size={32} color={shareCutIconColor} />                                        
+                                        <TouchableOpacity onPress={() => this.viewModel.playClip()} disabled={!this.state.currentClip}>
+                                            <View style={playerStyles.maximized.secondaryActionButton}>
+                                                <Ionicon name={`${ICON_PREFIX}play`} size={32} color={shareCutIconColor} />                                        
+                                                <RkText rkType="subtitle2">play</RkText>
+                                            </View>
+                                        </TouchableOpacity>
+                                    }                    
+                                    {this.state.currentClip &&
+                                        <TouchableOpacity onPress={() => this.viewModel.saveClip()} disabled={!this.state.currentClip}>
+                                            <View style={playerStyles.maximized.secondaryActionButton}>
+                                                <Ionicon name={`${ICON_PREFIX}save`} size={32} color={shareCutIconColor} />                                        
+                                                <RkText rkType="subtitle2">save</RkText>
+                                            </View>
+                                        </TouchableOpacity>
+                                    }                       
+                                    {this.state.currentClip &&
+                                        <TouchableOpacity onPress={() => this.viewModel.discardClip()} disabled={!this.state.currentClip}>
+                                            <View style={playerStyles.maximized.secondaryActionButton}>
+                                                <Ionicon name={`${ICON_PREFIX}trash`} size={32} color={shareCutIconColor} />                                        
+                                                <RkText rkType="subtitle2">discard</RkText>
+                                            </View>
                                         </TouchableOpacity>
                                     }                       
                                     {this.state.currentClip &&
                                         <TouchableOpacity onPress={() => this.viewModel.shareClip()} disabled={!this.state.currentClip}>
-                                            <Ionicon name={`${ICON_PREFIX}share`} size={32} color={shareCutIconColor} />                                        
+                                            <View style={playerStyles.maximized.secondaryActionButton}>
+                                                <Ionicon name={`${ICON_PREFIX}share`} size={32} color={shareCutIconColor} />                                        
+                                                <RkText rkType="subtitle2">share</RkText>
+                                            </View>
                                         </TouchableOpacity>
                                     }
                                 </View>

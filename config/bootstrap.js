@@ -139,7 +139,20 @@ import {
       fontSize: theme => theme.fonts.sizes.p4,
       fontFamily: theme => theme.fonts.family.regular,
     });
-  
+
+    RkTheme.setType('RkText', 'subtitle1', {
+      fontSize: theme => theme.fonts.sizes.l1,
+      fontFamily: theme => theme.fonts.family.light,
+    });
+    RkTheme.setType('RkText', 'subtitle2', {
+      fontSize: theme => theme.fonts.sizes.l2,
+      fontFamily: theme => theme.fonts.family.light,
+    });
+    RkTheme.setType('RkText', 'subtitle3', {
+      fontSize: theme => theme.fonts.sizes.l3,
+      fontFamily: theme => theme.fonts.family.regular,
+    });
+
     RkTheme.setType('RkText', 'center', {
       text: {
         textAlign: 'center',

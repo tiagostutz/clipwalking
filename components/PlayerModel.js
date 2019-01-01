@@ -1,11 +1,15 @@
 import { RhelenaPresentationModel } from 'rhelena';
-import TrackPlayer, { STATE_PLAYING } from 'react-native-track-player';
+import TrackPlayer from 'react-native-track-player';
 import PouchDB from 'pouchdb-react-native'
 import manuh from 'manuh'
+
+import { NativeModules } from 'react-native'
 
 import assetService from '../data/assets'
 import topics from '../config/topics'
 import { DB_TRACK_POSITION } from '../config/variables'
+
+const { clip } = NativeModules.AudioClipper
 
 export default class PlayerModel extends RhelenaPresentationModel {
     constructor() {
@@ -48,7 +52,11 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 
                 this.currenTrackInfo = msg.episode
                 
-                assetService.storeAudio(msg.episode.url, audioPath => {                    
+                assetService.storeAudio(msg.episode.url, ({audioPath, originalPath}) => {  
+                    console.log('+++== Store Audio', audioPath, originalPath);
+                    
+                    this.currenTrackInfo.audioPath = audioPath  
+                    this.currenTrackInfo.originalPath = originalPath                
                     const trackToPlay = {
                         "id": msg.episode.id,
                         "url": audioPath,
@@ -166,17 +174,33 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async toggleCut() {
-        if (!this.clipStartPosition) {
+        if (!this.clipStartPosition && !this.currentClip) {
             this.clipStartPosition = await TrackPlayer.getPosition()
-            this.currentClip = null
-        }else{
+        }else if(this.clipStartPosition && !this.currentClip) {
             this.currentClip = {
-                start: Math.floor(this.clipStartPosition)-1,
-                end: Math.floor(await TrackPlayer.getPosition())+1
-            }
-            
+                start: parseInt(Math.floor(this.clipStartPosition)-1),
+                end: parseInt(Math.floor(await TrackPlayer.getPosition())+1)
+            }            
+        }else{
             this.clipStartPosition = null
+            this.currentClip = null
         }
+    }
+
+    async playClip() {
+
+    }
+
+    async saveClip() {
+        console.log('+++ === clips',this.currentClip.start, this.currentClip.end)
+        
+        clip(this.currenTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, (error, response) => {
+            console.log('++++====', error, response);            
+        })
+    }
+
+    async discardClip() {
+
     }
 
     async shareClip() {

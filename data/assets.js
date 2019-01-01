@@ -11,12 +11,14 @@ module.exports.storeAudio = async (url, callback) => {
         })
         .fetch('GET', urlParam)
         .then(res => {          
-            const filePath = "file://"+res.path()
+            const originalPath = res.path()
+            const audioPath = "file://"+originalPath
             dbAudioFilePath.put({
                 "_id": urlParam,
-                "filePath": filePath
+                "audioPath": audioPath,
+                "originalPath": originalPath
             })
-            callbackParam(filePath)
+            callbackParam({audioPath, originalPath})
         })
     }
     
@@ -28,13 +30,13 @@ module.exports.storeAudio = async (url, callback) => {
 
     try {
         const audio = await dbAudioFilePath.get(url)
-        // console.log('+++=== FILE PATH',audio.filePath.replace("file://", ""));
+        console.log('+++=== FILE PATH',audio.originalPath);
         
-        if(!await RNFetchBlob.fs.exists(audio.filePath.replace("file://", ""))) {
+        if(!await RNFetchBlob.fs.exists(audio.originalPath)) {
             await dbAudioFilePath.remove(audio)
             downloadFile(url, callback)
         }else{
-            callback(audio.filePath)
+            callback(audio)
         }
     } catch (error) {
         if (error.status === 404) {

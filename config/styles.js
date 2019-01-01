@@ -91,6 +91,11 @@ module.exports.playerStyles = {
             flexDirection: "column", 
             justifyContent: "center", 
             alignItems: "center",
+        },
+         secondaryActionButton: {
+             flexDirection: "column", 
+             justifyContent: "center", 
+             alignItems:"center"
         }
     }))
 }

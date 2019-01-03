@@ -22,6 +22,8 @@ import MaterialIcon from 'react-native-vector-icons/MaterialIcons'
 import TextTicker from 'react-native-text-ticker'
 
 import { ICON_PREFIX } from '../config/variables'
+import t from '../locales'
+
 import ProgressBarMini from './ProgressBarMini'
 import ProgressBar from './ProgressBar'
 import PlayerModel from './PlayerModel'
@@ -79,10 +81,10 @@ export default class Player extends Component {
         const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? "tomato" : "black"
         const shareCutIconColor = this.state.currentClip ? "black" : "#C0C0C0"
 
-        if (this.state.currenTrackInfo) {
+        if (this.state.currentTrackInfo) {
             if (this.state.isFloatingMode) {
                 playerComponent = (
-                    this.state.currenTrackInfo &&                    
+                    this.state.currentTrackInfo &&                    
                     <View style={playerStyles.floating.container}>
                         <ProgressBarMini />
                         <View style={playerStyles.floating.body}>                                
@@ -91,8 +93,8 @@ export default class Player extends Component {
                             </TouchableWithoutFeedback>
                             <TouchableWithoutFeedback onPress={() => this.viewModel.toggleMode()}>
                                 <View style={playerStyles.floating.trackInfo}>
-                                    <RkText numberOfLines={1} rkType='secondary6'>{this.state.currenTrackInfo.title}</RkText>
-                                    <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
+                                    <RkText numberOfLines={1} rkType='secondary6'>{this.state.currentTrackInfo.title}</RkText>
+                                    <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currentTrackInfo.author}</RkText>
                                 </View>
                             </TouchableWithoutFeedback>    
                             <TouchableOpacity onPress={playIconAction}>
@@ -106,18 +108,18 @@ export default class Player extends Component {
                 )
             }else{
                 playerComponent = (
-                    this.state.currenTrackInfo &&
+                    this.state.currentTrackInfo &&
                     <View style={playerStyles.maximized.container}>
                         <View style={playerStyles.maximized.body}>
                             <TouchableWithoutFeedback onPress={() => this.viewModel.toggleMode()}>
                                 <View style={{flexDirection: "row", flex: 1, width: "100%", justifyContent: "space-between"}}>
                                         <SimpleLineIcon name={`arrow-down`}  size={21} color="black" />
-                                    <RkText rkType='secondary5'>{this.state.currenTrackInfo.showName}</RkText>
+                                    <RkText rkType='secondary5'>{this.state.currentTrackInfo.showName}</RkText>
                                     <View></View>
                                 </View>
                             </TouchableWithoutFeedback>
                             <View>
-                                <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currenTrackInfo.image}} permanent={false} />
+                                <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currentTrackInfo.image}} permanent={false} />
                             </View>
                             <View style={playerStyles.maximized.trackInfo}>
                                 <TextTicker style={{ fontSize: 21 }}
@@ -126,9 +128,9 @@ export default class Player extends Component {
                                     repeatSpacer={100}
                                     marqueeDelay={4000}
                                 >
-                                    {this.state.currenTrackInfo.title}
+                                    {this.state.currentTrackInfo.title}
                                 </TextTicker>
-                                <RkText numberOfLines={1} rkType='secondary3' style={{color: "#999"}}>{this.state.currenTrackInfo.author}</RkText>
+                                <RkText numberOfLines={1} rkType='secondary3' style={{color: "#999"}}>{this.state.currentTrackInfo.author}</RkText>
                             </View>                            
                             <View style={{width: "100%", flex: 1, marginTop: 10}}>
                                 <ProgressBar />
@@ -143,18 +145,10 @@ export default class Player extends Component {
                                         </TouchableOpacity>
                                     }
                                     {this.state.currentClip &&
-                                        <TouchableOpacity onPress={() => this.viewModel.playClip()} disabled={!this.state.currentClip}>
-                                            <View style={playerStyles.maximized.secondaryActionButton}>
-                                                <Ionicon name={`${ICON_PREFIX}play`} size={32} color={shareCutIconColor} />                                        
-                                                <RkText rkType="subtitle2">play</RkText>
-                                            </View>
-                                        </TouchableOpacity>
-                                    }                    
-                                    {this.state.currentClip &&
                                         <TouchableOpacity onPress={() => this.viewModel.saveClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}save`} size={32} color={shareCutIconColor} />                                        
-                                                <RkText rkType="subtitle2">save</RkText>
+                                                <RkText rkType="subtitle2">{t('save')}</RkText>
                                             </View>
                                         </TouchableOpacity>
                                     }                       
@@ -162,7 +156,7 @@ export default class Player extends Component {
                                         <TouchableOpacity onPress={() => this.viewModel.discardClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}trash`} size={32} color={shareCutIconColor} />                                        
-                                                <RkText rkType="subtitle2">discard</RkText>
+                                                <RkText rkType="subtitle2">{t('discard')}</RkText>
                                             </View>
                                         </TouchableOpacity>
                                     }                       
@@ -170,7 +164,7 @@ export default class Player extends Component {
                                         <TouchableOpacity onPress={() => this.viewModel.shareClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}share`} size={32} color={shareCutIconColor} />                                        
-                                                <RkText rkType="subtitle2">share</RkText>
+                                                <RkText rkType="subtitle2">{t('share')}</RkText>
                                             </View>
                                         </TouchableOpacity>
                                     }
@@ -178,13 +172,16 @@ export default class Player extends Component {
                             </View>
                             <View style={{width: "100%", flexDirection: "row", justifyContent: "space-evenly", flex: 1, marginTop: 20}}>
                                 <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(-30)}>
-                                    <MaterialIcon name="replay-30" size={48} />
+                                { !this.state.currentClip && <MaterialIcon name="replay-30" size={48} /> }
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={playIconAction}>
-                                    <Ionicon name={iconPlay} size={56} color="black" />
+                                    <View style={{justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
+                                        <Ionicon name={iconPlay} size={56} color="black" />
+                                        { this.state.currentClip && <RkText rkType="subtitle2">{t('preview clip')}</RkText>}
+                                    </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(30)}>
-                                    <MaterialIcon name="forward-30" size={48} />
+                                { !this.state.currentClip && <MaterialIcon name="forward-30" size={48} /> }
                                 </TouchableOpacity>
                             </View>
                         </View>

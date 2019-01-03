@@ -15,7 +15,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
     constructor() {
         super();
 
-        this.currenTrackInfo = null
+        this.currentTrackInfo = null
         this.playerReady = false
         this.isPlaying = false
         this.isFloatingMode = false
@@ -37,7 +37,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
-            if (this.currenTrackInfo && this.currenTrackInfo.id === msg.episode.id) {
+            if (this.currentTrackInfo && this.currentTrackInfo.id === msg.episode.id) {
                 try {                                 
                     const currentTrackState = await TrackPlayer.getState()   
                     if (currentTrackState === TrackPlayer.STATE_PLAYING || currentTrackState === TrackPlayer.STATE_BUFFERING) { 
@@ -50,28 +50,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 }
             }else{
                 
-                this.currenTrackInfo = msg.episode
-                
-                assetService.storeAudio(msg.episode.url, ({audioPath, originalPath}) => {  
-                    console.log('+++== Store Audio', audioPath, originalPath);
-                    
-                    this.currenTrackInfo.audioPath = audioPath  
-                    this.currenTrackInfo.originalPath = originalPath                
-                    const trackToPlay = {
-                        "id": msg.episode.id,
-                        "url": audioPath,
-                        "title": msg.episode.title,
-                        "artist": msg.episode.author ? msg.episode.author : "Unknown artist",
-                        "album": msg.episode.showName,
-                        "artwork": msg.episode.image,
-                        "description": msg.episode.description
-                    }
-                    
-                    this.play([trackToPlay])
-                })
-                // notify that the buffer has started
-                manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: msg.episode.id})
-
+                this.playEpisode(msg.episode)
             }
         })
     }
@@ -84,6 +63,31 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.isFloatingMode = !this.isFloatingMode
     }
     
+    async playEpisode(episode) {
+        this.currentTrackInfo = episode
+                
+        assetService.storeAudio(this.currentTrackInfo.url, ({audioPath, originalPath}) => {  
+            console.log('+++== Store Audio', audioPath, originalPath);
+            
+            this.currentTrackInfo.audioPath = audioPath  
+            this.currentTrackInfo.originalPath = originalPath                
+            const trackToPlay = {
+                "id": this.currentTrackInfo.id,
+                "url": audioPath,
+                "title": this.currentTrackInfo.title,
+                "artist": this.currentTrackInfo.author ? this.currentTrackInfo.author : "Unknown artist",
+                "album": this.currentTrackInfo.showName,
+                "artwork": this.currentTrackInfo.image,
+                "description": this.currentTrackInfo.description
+            }
+            
+            this.play([trackToPlay])
+        })
+        // notify that the buffer has started
+        manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: episode.id})
+
+    }
+
     async play(trackList) {
         try {
             const playAndPublish = () => {
@@ -95,10 +99,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 return
             }
     
-            if (!trackList && !this.currenTrackInfo) {
+            if (!trackList && !this.currentTrackInfo) {
                 console.error("The `trackList` param cannot be empty. Please spicify a track to be played.")            
                 return
-            }else if(!trackList && this.currenTrackInfo){ //if it is just a "resume"
+            }else if(!trackList && this.currentTrackInfo){ //if it is just a "resume"
                 return playAndPublish()
             }
             
@@ -135,14 +139,19 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
     async pause() {
         try {
+            const lastPosition = await TrackPlayer.getPosition()
             await TrackPlayer.pause()
-            return this.persistCurrentTrackState()            
+            return this.persistCurrentTrackState(lastPosition-3)            
         } catch (error) {
             console.error(error);        
         }
     }
 
-    async persistCurrentTrackState() {
+    async seekToByAmount(amount=15) {
+        return TrackPlayer.seekTo(await TrackPlayer.getPosition()+amount)
+    }
+
+    async persistCurrentTrackState(lastPosition) {
         try {
             const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
             const currentPlayerTrackID = await TrackPlayer.getCurrentTrack()    
@@ -151,14 +160,14 @@ export default class PlayerModel extends RhelenaPresentationModel {
                     const doc = await dbTrackPosition.get(currentPlayerTrackID)
                     return dbTrackPosition.put({
                             "_id": currentPlayerTrackID,
-                            "position": await TrackPlayer.getPosition(),
+                            "position": lastPosition,
                             "_rev": doc._rev
                         });
                 } catch (error) {
                     if (error.status === 404) {
                         return dbTrackPosition.put({
                             "_id": currentPlayerTrackID,
-                            "position": await TrackPlayer.getPosition(),
+                            "position": lastPosition,
                         });
                     }
     
@@ -171,64 +180,75 @@ export default class PlayerModel extends RhelenaPresentationModel {
         } catch (error) {
             console.error(error);         
         }
+        
+    }
+
+    async resetClipper() {
+        this.clipStartPosition = null
+        this.currentClip = null
     }
 
     async toggleCut() {
-        if (!this.clipStartPosition && !this.currentClip) {
+        if (!this.clipStartPosition && !this.currentClip) { //not cutting and not "cutted"
             this.clipStartPosition = await TrackPlayer.getPosition()
-        }else if(this.clipStartPosition && !this.currentClip) {
+            this.clipStartPosition = this.clipStartPosition
+
+        }else if(this.clipStartPosition && !this.currentClip) { //"cutted", can share, delete, save, etc
+            await this.pause()
+            const clipStopPosition = await TrackPlayer.getPosition()
             this.currentClip = {
-                start: parseInt(Math.floor(this.clipStartPosition)-1),
-                end: parseInt(Math.floor(await TrackPlayer.getPosition())+1)
+                start: Math.floor(this.clipStartPosition),
+                end: Math.floor(clipStopPosition + 1)
             }            
-        }else{
-            this.clipStartPosition = null
-            this.currentClip = null
+
+            clip(this.currentTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, async (error, response) => {
+                if (error) {
+                    console.error(error);                
+                    return
+                }
+                this.lastAudioClipFilePath = response.filePath
+    
+                await TrackPlayer.reset()
+                // Adds tracks to the queue
+                
+                const trackToPlay = {
+                    "id": "lastClip",
+                    "url": "file://"+this.lastAudioClipFilePath,
+                    "title": this.currentTrackInfo.title + " CLIP",
+                    "artist": this.currentTrackInfo.author ? this.currentTrackInfo.author : "Unknown artist",
+                    "album": this.currentTrackInfo.showName,
+                    "artwork": this.currentTrackInfo.image,
+                    "description": this.currentTrackInfo.description
+                }
+                console.log('++===', JSON.stringify(trackToPlay))
+                
+                await TrackPlayer.add([trackToPlay])
+                await TrackPlayer.play()
+                return TrackPlayer.pause()
+            })
+
+        }else{ //after
+            this.resetClipper()
         }
     }
 
-    async playClip() {
-
-    }
-
     async saveClip() {
-        console.log('+++ === clips',this.currentClip.start, this.currentClip.end)
-        
-        clip(this.currenTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, (error, response) => {
-            console.log('++++====', error, response);            
-        })
+        this.resetClipper()
+        this.playEpisode(this.currentTrackInfo)
     }
 
     async discardClip() {
-
+        this.resetClipper()
+        this.playEpisode(this.currentTrackInfo)
     }
 
     async shareClip() {
         if (!this.currentClip) {
             return
         }
-    }
-    // NOT YET USED
-
-
-    async seekToByAmount(amount=15) {
-        return this.seekTo(await TrackPlayer.getPosition()+amount)
-    }
-   
-    async next() {
-        await this.persistCurrentTrackState()
-        return TrackPlayer.skipToNext()
-    }
-    async previous() {
-        await this.persistCurrentTrackState()
-        return TrackPlayer.skipToPrevious()
-    }
-    async reset() {
-        await this.persistCurrentTrackState()
-        return TrackPlayer.reset()
+        this.resetClipper()
+        this.playEpisode(this.currentTrackInfo)
     }
 
-    async seekTo(position) {
-        return TrackPlayer.seekTo(position)
-    }
+    
 }

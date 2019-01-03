@@ -28,21 +28,31 @@ export default class ProgressMarModel extends RhelenaPresentationModel {
             this.trackPositionRate = 0   
             this.loaded = false         
             return
+        }else if (duration <= 0) {
+            // clearInterval(this.updateHandler)
+            this.trackPositionRate = 0            
+            return
         }
-
+        
         this.trackPositionRate = await TrackPlayer.getPosition() / duration
         if (isNaN(this.trackPositionRate)) {
+            this.elapsed = 0
             this.trackPositionRate = 0            
             this.loaded = false
             return
+        }else if (remainingValue <= 0) {
+            // clearInterval(this.updateHandler)
+            this.elapsed = 0
+            this.trackPositionRate = 0            
+            return
         }
+        const remainingValue = duration*(1-this.trackPositionRate)
         
         this.loaded = true
         
 
         this.elapsed = formatElapsed(duration*this.trackPositionRate)
-        this.remaining = formatElapsed(duration*(1-this.trackPositionRate))
-
+        this.remaining = formatElapsed(remainingValue)
     }
 
     startSliding() {
@@ -56,6 +66,7 @@ export default class ProgressMarModel extends RhelenaPresentationModel {
     async setTrackPosition(ratio) {
         this.trackPositionRate = ratio
         const duration = await TrackPlayer.getDuration()
+        
         TrackPlayer.seekTo(duration * ratio)
     }
 }

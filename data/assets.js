@@ -1,11 +1,20 @@
 import RNFetchBlob from 'react-native-fetch-blob'
 import PouchDB from 'pouchdb-react-native'
+
+import manuh from 'manuh'
+import topics from '../config/topics'
+
+
 import { DB_AUDIO_FILE_PATH } from '../config/variables'
+import t from '../locales';
 
 module.exports.storeAudio = async (url, callback) => {
 
     const downloadFile = (urlParam, callbackParam) => {        
         
+
+        manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode')})
+
         RNFetchBlob.config({
             fileCache : true,
             appendExt : 'mp3'
@@ -19,6 +28,8 @@ module.exports.storeAudio = async (url, callback) => {
                 "audioPath": audioPath,
                 "originalPath": originalPath
             })
+
+            manuh.publish(topics.loader.activity.status.set, { value: 0 })
             callbackParam({audioPath, originalPath})
         })
     }
@@ -31,7 +42,6 @@ module.exports.storeAudio = async (url, callback) => {
 
     try {
         const audio = await dbAudioFilePath.get(url)
-        console.log('+++=== FILE PATH',audio.originalPath);
         
         if(!await RNFetchBlob.fs.exists(audio.originalPath)) {
             await dbAudioFilePath.remove(audio)

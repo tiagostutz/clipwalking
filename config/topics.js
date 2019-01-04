@@ -24,6 +24,16 @@ let topics = {
             },
             play: {
                 set: null
+            },
+            seekTo: {
+                set: null
+            }
+        }
+    },
+    loader: {
+        activity: {
+            status: {
+                set: null
             }
         }
     }

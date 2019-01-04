@@ -26,10 +26,6 @@ export default class ProgressBar extends ProgressComponent {
 
   render() {
 
-    if (!this.state.loaded) {
-      return <View style={{flex: 1, flexDirection: "row", justifyContent:"center"}}><RkText rkType='secondary1'>{t('loading').toUpperCase()}...</RkText></View>
-    }
-
     const thumbDimension = this.state.isSliding ? 16 : 8
     const trackColor = this.state.isSliding ? "#FF4141" : "#777"
     return (

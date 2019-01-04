@@ -21,7 +21,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.isPlaying = false
         this.isFloatingMode = false
         this.lastAudioClipFilePath = null
-        this.isClipping = false
         
         this.clipStartPosition = null        
         this.currentClip = null
@@ -62,6 +61,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
     }
 
+    publishPlayerUpdate() {
+        manuh.publish(topics.player.runtime.seekTo.set, { currentTrackInfo: this.currentTrackInfo })
+    }
+
     toggleMode() {
         this.isFloatingMode = !this.isFloatingMode
     }
@@ -71,7 +74,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 
         return new Promise(async (resolve, reject) => {
             assetService.storeAudio(this.currentTrackInfo.url, async ({audioPath, originalPath}) => {  
-                console.log('+++== Store Audio', audioPath, originalPath);
                 
                 this.currentTrackInfo.audioPath = audioPath  
                 this.currentTrackInfo.originalPath = originalPath                
@@ -95,6 +97,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async play(trackList) {
         try {
             const playAndPublish = () => {
+                this.publishPlayerUpdate()
                 return TrackPlayer.play()
             }
     
@@ -145,6 +148,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         try {
             const lastPosition = await TrackPlayer.getPosition()
             await TrackPlayer.pause()
+            this.publishPlayerUpdate()
             return this.persistCurrentTrackState(lastPosition-3)            
         } catch (error) {
             console.error(error);        
@@ -152,7 +156,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async seekToByAmount(amount=15) {
-        return TrackPlayer.seekTo(await TrackPlayer.getPosition()+amount)
+        await TrackPlayer.seekTo(await TrackPlayer.getPosition()+amount)
+        this.publishPlayerUpdate()
     }
 
     async persistCurrentTrackState(lastPosition) {
@@ -188,8 +193,9 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async resetClipper() {
+        this.lastAudioClipFilePath = null
         this.clipStartPosition = null
-        this.currentClip = null
+        this.currentClip = null        
     }
 
     async toggleCut() {
@@ -204,7 +210,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 start: Math.floor(this.clipStartPosition),
                 end: Math.floor(clipStopPosition + 1)
             }            
-            this.isClipping = true
+            this.publishIsWorking(1)
             clip(this.currentTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, async (error, response) => {
                 if (error) {
                     console.error(error);                
@@ -224,12 +230,11 @@ export default class PlayerModel extends RhelenaPresentationModel {
                     "artwork": this.currentTrackInfo.image,
                     "description": this.currentTrackInfo.description
                 }
-                console.log('++===', JSON.stringify(trackToPlay))
                 
                 await TrackPlayer.add([trackToPlay])
                 await TrackPlayer.play()
-                await TrackPlayer.pause()
-                this.isClipping = false
+                this.publishPlayerUpdate()
+                this.publishIsWorking(0)
             })
 
         }else{ //after
@@ -263,5 +268,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.pause()
     }
 
+    publishIsWorking(value) {
+        manuh.publish(topics.loader.activity.status.set, { value: value, text: t('clipping')})
+    }
     
 }

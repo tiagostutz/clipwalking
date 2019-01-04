@@ -1,7 +1,9 @@
 export default {
     "Available at":"Available at",
+    "clipping": "clipping",
     "delete": "delete",
     "discard":"discard",
+    "downloading episode": "downloading episode",
     "feed": "Feed",
     "Get the": "Get the",
     "later": "later",

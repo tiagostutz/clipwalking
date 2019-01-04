@@ -1,7 +1,9 @@
 export default {
     "Available at": "Disponível em",
+    "recortando": "recortando",
     "delete": "excluir",
     "discard": "descartar",
+    "downloading episode": "baixando episódio",
     "feed": "Feed",
     "Get the": "Baixe o",
     "later": "depois",

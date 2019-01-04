@@ -9,7 +9,9 @@ import {
     TouchableWithoutFeedback,
     Image,
     Animated,
-    Easing
+    Easing,
+    Modal,
+    ActivityIndicator
 } from 'react-native'
 
 import {
@@ -73,9 +75,6 @@ export default class Player extends Component {
     }
 
     render() {
-        if (this.state.isClipping) {
-            return <View><RkText>CLIPPING...</RkText></View>
-        }
         const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}play` : `${ICON_PREFIX}pause`
         const playIconAction = !this.state.isPlaying ? () => this.viewModel.play() : () => this.viewModel.pause()
         
@@ -135,10 +134,11 @@ export default class Player extends Component {
                                 </TextTicker>
                                 <RkText numberOfLines={1} rkType='secondary3' style={{color: "#999"}}>{this.state.currentTrackInfo.author}</RkText>
                             </View>                            
+                            
                             <View style={{width: "100%", flex: 1, marginTop: 10}}>
                                 <ProgressBar />
                                 <View style={{width: "100%", flexDirection: "row", justifyContent: "space-evenly", flex: 1}}>                                    
-                                    {!this.state.currentClip &&
+                                    {!this.state.lastAudioClipFilePath &&
                                         <TouchableOpacity onPress={() => this.viewModel.toggleCut()}>
                                             <Animated.View style={{
                                                 opacity: this.state.clipStartPosition && !this.state.currentClip ? this.blinkOpacityValue : (this.state.currentClip ? 0.1 : 1)
@@ -147,7 +147,7 @@ export default class Player extends Component {
                                             </Animated.View>
                                         </TouchableOpacity>
                                     }
-                                    {this.state.currentClip &&
+                                    {this.state.lastAudioClipFilePath &&
                                         <TouchableOpacity onPress={() => this.viewModel.saveClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}save`} size={32} color={shareCutIconColor} />                                        
@@ -155,7 +155,7 @@ export default class Player extends Component {
                                             </View>
                                         </TouchableOpacity>
                                     }                       
-                                    {this.state.currentClip &&
+                                    {this.state.lastAudioClipFilePath &&
                                         <TouchableOpacity onPress={() => this.viewModel.discardClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}trash`} size={32} color={shareCutIconColor} />                                        
@@ -163,7 +163,7 @@ export default class Player extends Component {
                                             </View>
                                         </TouchableOpacity>
                                     }                       
-                                    {this.state.currentClip &&
+                                    {this.state.lastAudioClipFilePath &&
                                         <TouchableOpacity onPress={() => this.viewModel.shareClip()} disabled={!this.state.currentClip}>
                                             <View style={playerStyles.maximized.secondaryActionButton}>
                                                 <Ionicon name={`${ICON_PREFIX}share`} size={32} color={shareCutIconColor} />                                        
@@ -173,20 +173,22 @@ export default class Player extends Component {
                                     }
                                 </View>
                             </View>
+                            
                             <View style={{width: "100%", flexDirection: "row", justifyContent: "space-evenly", flex: 1, marginTop: 20}}>
                                 <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(-10)}>
-                                { !this.state.currentClip && <MaterialIcon name="replay-10" size={48} /> }
+                                { !this.state.lastAudioClipFilePath && <MaterialIcon name="replay-10" size={48} /> }
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={playIconAction}>
                                     <View style={{justifyContent: "center", flexDirection: "column", alignItems: "center"}}>
                                         <Ionicon name={iconPlay} size={56} color="black" />
-                                        { this.state.currentClip && <RkText rkType="subtitle2">{t('preview clip')}</RkText>}
+                                        { this.state.lastAudioClipFilePath && <RkText rkType="subtitle2">{t('preview clip')}</RkText>}
                                     </View>
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(30)}>
-                                { !this.state.currentClip && <MaterialIcon name="forward-30" size={48} /> }
+                                { !this.state.lastAudioClipFilePath && <MaterialIcon name="forward-30" size={48} /> }
                                 </TouchableOpacity>
                             </View>
+                            
                         </View>
                     </View>            
                 )

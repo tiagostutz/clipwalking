@@ -1,6 +1,11 @@
 import { RhelenaPresentationModel } from 'rhelena';
 import TrackPlayer from 'react-native-track-player'
 import { formatElapsed } from '../utils/text'
+import manuh from 'manuh'
+
+import topics from '../config/topics'
+
+
 
 export default class ProgressMarModel extends RhelenaPresentationModel {
     constructor() {
@@ -16,10 +21,15 @@ export default class ProgressMarModel extends RhelenaPresentationModel {
             this.updateProgress()
         }, 100)
         this.updateHandler = setInterval(() => this.updateProgress(), 1000)
+
+        manuh.subscribe(topics.player.runtime.seekTo.set, "ProgressMarModel", _ => {
+            setTimeout(_ => this.updateProgress(), 200)
+        })
     }
     
     clean(){
         clearInterval(this.updateHandler)
+        manuh.unsubscribe(topics.player.runtime.seekTo.set, "ProgressMarModel")
     }
 
     async updateProgress() {

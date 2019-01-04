@@ -6,9 +6,13 @@ import { ifIphoneX } from 'react-native-iphone-x-helper'
 module.exports.listScreenStyle = RkStyleSheet.create(theme => ({
     screen: {
         marginTop: 40,
-        marginBottom: 120,
         height: "100%",
-        flexDirection: "column"
+        flexDirection: "column",
+        ...ifIphoneX({
+            paddingBottom: 50
+        },{
+            paddingBottom: 0
+        })
     },
     content: {
         paddingHorizontal: 14,

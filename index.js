@@ -10,11 +10,13 @@ import {name as appName} from './app.json';
 import topics from './config/topics'
 
 import { View } from 'react-native'
+import Loading from './components/Loading';
 
 const Main = () => (
     <View style={{flex: 1}}>
         <App />
         <Player />
+        <Loading />
     </View>
 )
 

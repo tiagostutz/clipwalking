@@ -35,6 +35,7 @@ const feedData = {
                 item.duration = durationSeconds
                 item.description = item.description.replace(/<[^>]+>/g, '')
                 item.showName = rss.title
+                item.showURL = rss.link
                 
                 return item
             })

@@ -3,11 +3,12 @@ import TrackPlayer from 'react-native-track-player';
 import PouchDB from 'pouchdb-react-native'
 import manuh from 'manuh'
 
-import { NativeModules } from 'react-native'
+import { NativeModules, Share } from 'react-native'
 
 import assetService from '../data/assets'
 import topics from '../config/topics'
 import { DB_TRACK_POSITION } from '../config/variables'
+import t from '../locales';
 
 const { clip } = NativeModules.AudioClipper
 
@@ -19,6 +20,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.playerReady = false
         this.isPlaying = false
         this.isFloatingMode = false
+        this.lastAudioClipFilePath = null
+        this.isClipping = false
         
         this.clipStartPosition = null        
         this.currentClip = null
@@ -66,26 +69,27 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async playEpisode(episode) {
         this.currentTrackInfo = episode
                 
-        assetService.storeAudio(this.currentTrackInfo.url, ({audioPath, originalPath}) => {  
-            console.log('+++== Store Audio', audioPath, originalPath);
-            
-            this.currentTrackInfo.audioPath = audioPath  
-            this.currentTrackInfo.originalPath = originalPath                
-            const trackToPlay = {
-                "id": this.currentTrackInfo.id,
-                "url": audioPath,
-                "title": this.currentTrackInfo.title,
-                "artist": this.currentTrackInfo.author ? this.currentTrackInfo.author : "Unknown artist",
-                "album": this.currentTrackInfo.showName,
-                "artwork": this.currentTrackInfo.image,
-                "description": this.currentTrackInfo.description
-            }
-            
-            this.play([trackToPlay])
+        return new Promise(async (resolve, reject) => {
+            assetService.storeAudio(this.currentTrackInfo.url, async ({audioPath, originalPath}) => {  
+                console.log('+++== Store Audio', audioPath, originalPath);
+                
+                this.currentTrackInfo.audioPath = audioPath  
+                this.currentTrackInfo.originalPath = originalPath                
+                const trackToPlay = {
+                    "id": this.currentTrackInfo.id,
+                    "url": audioPath,
+                    "title": this.currentTrackInfo.title,
+                    "artist": this.currentTrackInfo.author ? this.currentTrackInfo.author : "Unknown artist",
+                    "album": this.currentTrackInfo.showName,
+                    "artwork": this.currentTrackInfo.image,
+                    "description": this.currentTrackInfo.description
+                }
+                
+                resolve(await this.play([trackToPlay]))
+            })
+            // notify that the buffer has started
+            manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: episode.id})
         })
-        // notify that the buffer has started
-        manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: episode.id})
-
     }
 
     async play(trackList) {
@@ -200,20 +204,20 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 start: Math.floor(this.clipStartPosition),
                 end: Math.floor(clipStopPosition + 1)
             }            
-
+            this.isClipping = true
             clip(this.currentTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, async (error, response) => {
                 if (error) {
                     console.error(error);                
                     return
                 }
-                this.lastAudioClipFilePath = response.filePath
+                this.lastAudioClipFilePath = "file://"+response.filePath
     
                 await TrackPlayer.reset()
                 // Adds tracks to the queue
                 
                 const trackToPlay = {
                     "id": "lastClip",
-                    "url": "file://"+this.lastAudioClipFilePath,
+                    "url": this.lastAudioClipFilePath,
                     "title": this.currentTrackInfo.title + " CLIP",
                     "artist": this.currentTrackInfo.author ? this.currentTrackInfo.author : "Unknown artist",
                     "album": this.currentTrackInfo.showName,
@@ -224,7 +228,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 
                 await TrackPlayer.add([trackToPlay])
                 await TrackPlayer.play()
-                return TrackPlayer.pause()
+                await TrackPlayer.pause()
+                this.isClipping = false
             })
 
         }else{ //after
@@ -246,8 +251,16 @@ export default class PlayerModel extends RhelenaPresentationModel {
         if (!this.currentClip) {
             return
         }
+        await Share.share({
+            url: this.lastAudioClipFilePath,
+            title: this.currentTrackInfo.title
+        }, {
+            // Android only:
+            dialogTitle: this.currentTrackInfo.title,
+        })
         this.resetClipper()
-        this.playEpisode(this.currentTrackInfo)
+        await this.playEpisode(this.currentTrackInfo)
+        this.pause()
     }
 
     

@@ -73,12 +73,15 @@ export default class Player extends Component {
     }
 
     render() {
+        if (this.state.isClipping) {
+            return <View><RkText>CLIPPING...</RkText></View>
+        }
         const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}play` : `${ICON_PREFIX}pause`
         const playIconAction = !this.state.isPlaying ? () => this.viewModel.play() : () => this.viewModel.pause()
         
         let playerComponent = <View></View>
 
-        const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? "tomato" : "black"
+        const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? "#FF4141" : "black"
         const shareCutIconColor = this.state.currentClip ? "black" : "#C0C0C0"
 
         if (this.state.currentTrackInfo) {
@@ -171,8 +174,8 @@ export default class Player extends Component {
                                 </View>
                             </View>
                             <View style={{width: "100%", flexDirection: "row", justifyContent: "space-evenly", flex: 1, marginTop: 20}}>
-                                <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(-30)}>
-                                { !this.state.currentClip && <MaterialIcon name="replay-30" size={48} /> }
+                                <TouchableOpacity onPress={() => this.viewModel.seekToByAmount(-10)}>
+                                { !this.state.currentClip && <MaterialIcon name="replay-10" size={48} /> }
                                 </TouchableOpacity>
                                 <TouchableOpacity onPress={playIconAction}>
                                     <View style={{justifyContent: "center", flexDirection: "column", alignItems: "center"}}>

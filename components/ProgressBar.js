@@ -31,7 +31,7 @@ export default class ProgressBar extends ProgressComponent {
     }
 
     const thumbDimension = this.state.isSliding ? 16 : 8
-    const trackColor = this.state.isSliding ? "tomato" : "#777"
+    const trackColor = this.state.isSliding ? "#FF4141" : "#777"
     return (
       <View style={{flexDirection: "column"}}>
         <View style={{flexDirection: "row", justifyContent:"space-between"}}>

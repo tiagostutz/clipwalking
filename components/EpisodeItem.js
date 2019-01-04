@@ -93,8 +93,8 @@ export default class EpisodeItem extends Component {
                                 
                                 <TouchableOpacity onPress={this.onShowSummaryPress}>
                                     <View style={{flexDirection: "row"}}>
-                                    <RkText style={{color: "tomato"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
-                                    <Icon name={`${ICON_PREFIX}arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="tomato" />
+                                    <RkText style={{color: "#FF4141"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
+                                    <Icon name={`${ICON_PREFIX}arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="#FF4141" />
                                     </View>
                                 </TouchableOpacity>
                             </View>

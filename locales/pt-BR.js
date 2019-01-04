@@ -1,11 +1,14 @@
 export default {
+    "Available at": "Disponível em",
     "delete": "excluir",
     "discard": "descartar",
     "feed": "Feed",
+    "Get the": "Baixe o",
     "later": "depois",
     "loading": "carregando",
     "library": "Biblioteca",
     "listen later": "Ouvir depois",
+    "of the Podcast": "do Podcast",
     "on hold": "Em espera",
     "preview": "ouvir",
     "preview clip":"ouvir o trecho",
@@ -13,5 +16,6 @@ export default {
     "share": "compartilhar",
     "shows": "Programas",
     "summary and notes": "resumo e notas",
+    "This audio was clipped from the episode":"Esse trecho foi retirado do episódio",
     "waiting": "Aguardando"
 }

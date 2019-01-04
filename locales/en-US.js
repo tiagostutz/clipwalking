@@ -1,11 +1,14 @@
 export default {
+    "Available at":"Available at",
     "delete": "delete",
     "discard":"discard",
     "feed": "Feed",
+    "Get the": "Get the",
     "later": "later",
     "library": "Library",
     "listen later": "Listen Later",
     "loading": "loading",
+    "of the Podcast": "of the Podcast",
     "on hold": "on hold",
     "preview":"preview",
     "preview clip":"preview clip",
@@ -13,5 +16,6 @@ export default {
     "share": "share",
     "shows": "Shows",
     "summary and notes": "summary and notes",
+    "This audio was clipped from the episode": "This audio was clipped from the episode",
     "waiting": "Waiting"
 }

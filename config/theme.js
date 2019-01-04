@@ -2,7 +2,7 @@ import { scale } from '../utils/scale';
 
 const Colors = {
   accent: '#ff2824',
-  primary: 'tomato',
+  primary: '#FF4141',
   success: '#3bd555',
   disabled: '#cacaca',
 

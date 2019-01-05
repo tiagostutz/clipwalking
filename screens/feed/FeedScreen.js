@@ -19,6 +19,7 @@ import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
 
 import FeedScreenModel from './FeedScreenModel'
+import SplashScreen from 'react-native-splash-screen'
 export default class FeedScreen extends React.Component {
 
   static navigationOptions = {
@@ -28,6 +29,10 @@ export default class FeedScreen extends React.Component {
 
   componentWillMount() {
     attachModelToView(new FeedScreenModel(), this)
+  }
+
+  componentDidMount() {
+    SplashScreen.hide()
   }
 
   render = () => (

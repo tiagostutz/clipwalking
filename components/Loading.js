@@ -20,10 +20,10 @@ export default class Loading extends Component {
             transparent
             style={{height:"100%", width:"100%", flex: 1, flexDirection:"column", justifyContent: "center", alignItems: "center"}}
         >
-        <View style={{flex: 1, backgroundColor: "rgba(255,255,255,0.7)", flexDirection:"column", justifyContent: "center", alignItems: "center"}}>
-            <View style={{padding: 30, borderRadius: 20, backgroundColor: "#F4F4F4"}}>
+        <View style={{flex: 1, backgroundColor: "rgba(255,255,255,0.8)", flexDirection:"column", justifyContent: "center", alignItems: "center"}}>
+            <View style={{padding: 30, borderRadius: 20, backgroundColor: "#F4F4F4", flexDirection:"column", justifyContent: "center", alignItems: "center"}}>
                 <ActivityIndicator size="large" />
-                <RkText  rkType='secondary2' style={{marginTop: 10}}>{this.state.text}</RkText>
+                <RkText  rkType='secondary1' style={{marginTop: 10, textAlign: "center", justifyContent: "center", alignItems:"center"}}>{this.state.text}</RkText>
             </View>
         </View>
     </Modal>

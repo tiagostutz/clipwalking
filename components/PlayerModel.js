@@ -1,13 +1,14 @@
 import { RhelenaPresentationModel } from 'rhelena';
 import TrackPlayer from 'react-native-track-player';
-import PouchDB from 'pouchdb-react-native'
 import manuh from 'manuh'
 
 import { NativeModules, Share } from 'react-native'
 
 import assetService from '../data/assets'
+import trackService from '../data/tracks'
+import clipService from '../data/clips'
 import topics from '../config/topics'
-import { DB_TRACK_POSITION } from '../config/variables'
+
 import t from '../locales';
 
 const { clip } = NativeModules.AudioClipper
@@ -119,25 +120,20 @@ export default class PlayerModel extends RhelenaPresentationModel {
             await TrackPlayer.reset()
             // Adds tracks to the queue
             await TrackPlayer.add(trackList)
-
-            const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
-            try {
-                const doc = await dbTrackPosition.get(trackList[0].id)   
-                await playAndPublish()
+            
+            let doc = await trackService.get(trackList[0].id)            
+            if (!doc) {
+                console.log('+++ === NOT DOC', doc);
                 
-                TrackPlayer.seekTo(doc.position) //resume from where it stopped
-                
-            } catch (error) {
-                if (error.status === 404) { //if it is the first time this track is played
-                    dbTrackPosition.put({
-                        "_id": trackList[0].id,
-                        "position": 0
-                    })
-                    playAndPublish()              
-                }else{
-                    console.error(error);                    
-                }                
+                doc = await trackService.put({
+                    "_id": trackList[0].id,
+                    "position": 0
+                })
+                console.log('+++ === YES DOC', doc);
             }
+            await playAndPublish()
+            
+            TrackPlayer.seekTo(doc.position) //resume from where it stopped
             
         } catch (error) {
             console.error(error);                    
@@ -162,26 +158,20 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
     async persistCurrentTrackState(lastPosition) {
         try {
-            const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
             const currentPlayerTrackID = await TrackPlayer.getCurrentTrack()    
             if (currentPlayerTrackID) {
-                try {                
-                    const doc = await dbTrackPosition.get(currentPlayerTrackID)
-                    return dbTrackPosition.put({
-                            "_id": currentPlayerTrackID,
-                            "position": lastPosition,
-                            "_rev": doc._rev
-                        });
-                } catch (error) {
-                    if (error.status === 404) {
-                        return dbTrackPosition.put({
-                            "_id": currentPlayerTrackID,
-                            "position": lastPosition,
-                        });
-                    }
-    
-                    console.error(error);                
-                    return null
+                let doc = await trackService.get(currentPlayerTrackID)
+                if (doc) {
+                    return trackService.put({
+                        "_id": currentPlayerTrackID,
+                        "position": lastPosition,
+                        "_rev": doc._rev
+                    })
+                }else{
+                    return trackService.put({
+                        "_id": currentPlayerTrackID,
+                        "position": lastPosition,
+                    })
                 }
     
             }
@@ -243,6 +233,17 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async saveClip() {
+        let clip = clipService.put({
+            trackInfo: this.currentTrackInfo,
+            filePath: this.lastAudioClipFilePath
+        })
+        if (clip) {
+            //saved!
+            
+        }else{
+            //error saving
+
+        }
         this.resetClipper()
         this.playEpisode(this.currentTrackInfo)
     }

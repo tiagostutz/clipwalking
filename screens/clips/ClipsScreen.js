@@ -19,7 +19,7 @@ import EpisodeItem from '../../components/EpisodeItem'
 import t from '../../locales'
 
 import ClipsScreenModel from './ClipsScreenModel'
-
+import ClipListItem from './ClipListItem'
 
 export default class ClipsScreen extends React.Component {
 
@@ -42,15 +42,15 @@ export default class ClipsScreen extends React.Component {
     setTimeout(()=>SplashScreen.hide(), 3000)
   }
 
-
   render = () => (
     <View style={listScreenStyle.screen}>
       <View style={listScreenStyle.content}>
         <RkText style={listScreenStyle.title} rkType='header0'>{t('my clips')}</RkText>
-        { this.state.clipsData && this.state.clipsData.length > 0 && 
+        <View><RkText>Not yet implemented. Sorry... 🐒</RkText></View>
+        { false && this.state.clipData && this.state.clipData.length > 0 && 
           <FlatList
-            data={this.state.clipsData}
-            renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
+            data={this.state.clipData}
+            renderItem={({ item }) => <ClipListItem key={item._id} trackInfo={item.trackInfo} filePath={item.filePath} />}
             keyExtractor={(item) => `${item.id}`}
             style={listScreenStyle.listContainer}
           />

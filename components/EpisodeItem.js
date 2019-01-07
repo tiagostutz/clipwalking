@@ -25,6 +25,8 @@ import NowPlayingSign from './NowPlayingSign'
 
 import EpisodeItemModel from './EpisodeItemModel'
 
+import { Colors } from '../config/theme'
+
 import imageCacheHoc from 'react-native-image-cache-hoc';
 const CacheableImage = imageCacheHoc(Image);
 export default class EpisodeItem extends Component {
@@ -93,8 +95,8 @@ export default class EpisodeItem extends Component {
                                 
                                 <TouchableOpacity onPress={this.onShowSummaryPress}>
                                     <View style={{flexDirection: "row"}}>
-                                    <RkText style={{color: "#FF4141"}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
-                                    <Icon name={`${ICON_PREFIX}arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color="#FF4141" />
+                                    <RkText style={{color: Colors.primary}} numberOfLines={1} rkType='secondary3'>{t('summary and notes')}</RkText>
+                                    <Icon name={`${ICON_PREFIX}arrow-forward`} style={{marginLeft: 4, marginTop: 3}} size={12} color={Colors.primary} />
                                     </View>
                                 </TouchableOpacity>
                             </View>

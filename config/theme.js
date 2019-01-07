@@ -1,10 +1,11 @@
 import { scale } from '../utils/scale';
 
-const Colors = {
+export const Colors = {
   accent: '#ff2824',
   primary: '#FF4141',
   success: '#3bd555',
   disabled: '#cacaca',
+  inactive: 'gray',
 
   foreground: '#212121',
   alterForeground: '#707070',

@@ -4,6 +4,7 @@ import ShowsScreen from './screens/shows/ShowsScreen'
 import WaitingScreen from './screens/waiting/WaitingScreen'
 import ClipsScreen from './screens/clips/ClipsScreen';
 import { bootstrap } from './config/bootstrap';
+import { Colors } from './config/theme'
 
 bootstrap();
 
@@ -15,8 +16,8 @@ const TabNavigator = createBottomTabNavigator({
 },
 {
   tabBarOptions: {
-    activeTintColor: '#FF4141',
-    inactiveTintColor: 'gray',
+    activeTintColor: Colors.primary,
+    inactiveTintColor: Colors.inactive,
   }
 })
 

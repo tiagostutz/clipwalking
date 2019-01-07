@@ -6,8 +6,6 @@ export default class ClipsScreenModel extends RhelenaPresentationModel {
         super();
         this.clipData = []
         clipService.getAll((result, err) => {
-            console.log('+++=== CLIPS', JSON.stringify(result))
-            
             if (err) {
                 return console.error(err)                
             }

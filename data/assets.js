@@ -21,7 +21,6 @@ module.exports.storeAudio = async (url, callback) => {
         .fetch('GET', urlParam)
 
         fetchProm.progress({ interval : 100 }, (received, total) => {
-            console.log('+++ progress ' + Math.floor(received/total*100) + '%')
             manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode') + " \n " +Math.floor(received/total*100) + '%'})
         })
 

@@ -10,6 +10,7 @@ import { ProgressComponent } from 'react-native-track-player'
 import ProgressMarModel from './ProgressBarModel';
 
 import t from '../locales'
+import { Colors } from '../config/theme';
 
 export default class ProgressBar extends ProgressComponent {
   constructor(props) {
@@ -27,7 +28,7 @@ export default class ProgressBar extends ProgressComponent {
   render() {
 
     const thumbDimension = this.state.isSliding ? 16 : 8
-    const trackColor = this.state.isSliding ? "#FF4141" : "#777"
+    const trackColor = this.state.isSliding ? Colors.primary : Colors.alterForeground
     return (
       <View style={{flexDirection: "column"}}>
         <View style={{flexDirection: "row", justifyContent:"space-between"}}>
@@ -47,7 +48,7 @@ export default class ProgressBar extends ProgressComponent {
             shadowOpacity: .4
           }}
           trackStyle={{
-            backgroundColor: "#D0D0D0",
+            backgroundColor: Colors.secondaryForeground,
             height: 2
           }}
           minimumTrackTintColor={trackColor}

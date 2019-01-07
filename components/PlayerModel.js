@@ -123,13 +123,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
             
             let doc = await trackService.get(trackList[0].id)            
             if (!doc) {
-                console.log('+++ === NOT DOC', doc);
-                
                 doc = await trackService.put({
                     "_id": trackList[0].id,
                     "position": 0
                 })
-                console.log('+++ === YES DOC', doc);
             }
             await playAndPublish()
             

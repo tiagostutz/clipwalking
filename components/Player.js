@@ -31,6 +31,7 @@ import ProgressBar from './ProgressBar'
 import PlayerModel from './PlayerModel'
 
 import imageCacheHoc from 'react-native-image-cache-hoc';
+import { Colors } from '../config/theme';
 const CacheableImage = imageCacheHoc(Image);
 
 
@@ -80,8 +81,8 @@ export default class Player extends Component {
         
         let playerComponent = <View></View>
 
-        const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? "#FF4141" : "black"
-        const shareCutIconColor = this.state.currentClip ? "black" : "#C0C0C0"
+        const cutIconColor = this.state.clipStartPosition && !this.state.currentClip ? Colors.primary : Colors.foreground
+        const shareCutIconColor = this.state.currentClip ? Colors.foreground : Colors.disabled
 
         if (this.state.currentTrackInfo) {
             if (this.state.isFloatingMode) {
@@ -96,7 +97,7 @@ export default class Player extends Component {
                             <TouchableWithoutFeedback onPress={() => this.viewModel.toggleMode()}>
                                 <View style={playerStyles.floating.trackInfo}>
                                     <RkText numberOfLines={1} rkType='secondary6'>{this.state.currentTrackInfo.title}</RkText>
-                                    <RkText numberOfLines={1} rkType='secondary7' style={{color: "#999"}}>{this.state.currentTrackInfo.author}</RkText>
+                                    <RkText numberOfLines={1} rkType='secondary7' style={{color: Colors.hintForeground}}>{this.state.currentTrackInfo.author}</RkText>
                                 </View>
                             </TouchableWithoutFeedback>    
                             <TouchableOpacity onPress={playIconAction}>
@@ -132,7 +133,7 @@ export default class Player extends Component {
                                 >
                                     {this.state.currentTrackInfo.title}
                                 </TextTicker>
-                                <RkText numberOfLines={1} rkType='secondary3' style={{color: "#999"}}>{this.state.currentTrackInfo.author}</RkText>
+                                <RkText numberOfLines={1} rkType='secondary3' style={{color: Colors.hintForeground}}>{this.state.currentTrackInfo.author}</RkText>
                             </View>                            
                             
                             <View style={{width: "100%", flex: 1, marginTop: 10}}>

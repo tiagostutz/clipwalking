@@ -3,8 +3,8 @@ import PouchDB from 'pouchdb-react-native'
 import { DB_FEED_FULL, DB_FEED_REMOVED, DB_FEED_WAITING } from '../config/variables'
 
 const feedData = {
-    fetch: (callback, skip=0, limit=10) => {
-        fetch('https://www.npr.org/rss/podcast.php?id=510313')
+    fetch: (url,callback, skip=0, limit=10) => {
+        fetch(url)
         .then(response => response.text())
         .then(responseData => rssParser.parse(responseData))
         .then((rss, err) => {
@@ -40,6 +40,31 @@ const feedData = {
                 return item
             })
             return callback(normalizedResult.slice(skip, limit))
+        });
+
+    },
+    fetchShowInfo: (url,callback) => {        
+        fetch(url)
+        .then(response => response.text() )
+        .then(responseData => rssParser.parse(responseData))
+        .then((rss, err) => {
+            if (err) {
+                return callback(null, err)
+            }            
+            
+            const normalizedResult = {
+                title: rss.title,
+                description: rss.description,
+                url: rss.links.length > 0 ? rss.links[0].url : null,
+                language: rss.language,
+                copyright: rss.copyright,
+                lastUpdated: new Date(rss.items[0].published),
+                imageURL: rss.image ? rss.image.url : null,
+                authors: rss.itunes && rss.itunes.authors && rss.itunes.authors.length>0 ? rss.itunes.authors[0].name : null,
+                categories: rss.itunes.categories,
+                owner: rss.itunes.owner ? rss.itunes.owner : null
+            }
+            return callback(normalizedResult)
         });
 
     },
@@ -81,7 +106,7 @@ const feedData = {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
         
         //fetches the full feed and checks whether the elements are present
-        feedData.fetch(normalizedResult => {  
+        feedData.fetch('https://www.npr.org/rss/podcast.php?id=510313',normalizedResult => {  
 
             // return the result and leave the database sync to be made in background
             callback(normalizedResult)

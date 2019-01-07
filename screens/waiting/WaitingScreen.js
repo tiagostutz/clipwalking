@@ -11,6 +11,8 @@ import {
  
 import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
+import SplashScreen from 'react-native-splash-screen'
+
 
 import { listScreenStyle } from '../../config/styles'
 
@@ -34,6 +36,12 @@ export default class WaitingScreen extends React.Component {
     componentWillUnmount() {
       this.viewModel.clean()
     }
+    
+    componentDidMount() {
+      SplashScreen.hide()    
+      setTimeout(()=>SplashScreen.hide(), 3000)
+    }
+  
 
     render = () => (
       <View style={listScreenStyle.screen}>

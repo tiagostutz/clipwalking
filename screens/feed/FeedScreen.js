@@ -32,7 +32,8 @@ export default class FeedScreen extends React.Component {
   }
 
   componentDidMount() {
-    SplashScreen.hide()
+    SplashScreen.hide()    
+    setTimeout(()=>SplashScreen.hide(), 3000)
   }
 
   render = () => (

@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -55,8 +54,7 @@
 		7E2175D9DD95492A88D10633 /* libBugsnagReactNative.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 92D873B0A01E41A89BA4935C /* libBugsnagReactNative.a */; };
 		812FF89421DB8445003AD4F7 /* RNAudioClipper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812FF89321DB8445003AD4F7 /* RNAudioClipper.swift */; };
 		812FF89621DB84F9003AD4F7 /* RNAudioClipperBridge.m in Sources */ = {isa = PBXBuildFile; fileRef = 812FF89521DB84F9003AD4F7 /* RNAudioClipperBridge.m */; };
-		81C6604A21E0FF6B00FA7613 /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81C6604821E0FF6B00FA7613 /* Crashlytics.framework */; };
-		81C6604B21E0FF6B00FA7613 /* Fabric.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81C6604921E0FF6B00FA7613 /* Fabric.framework */; };
+		8153E10721E127DE00C0B9EC /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		82CD3C5DF2274A38A8F72FAB /* Roboto-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 734F367641C4437A8AE56698 /* Roboto-Bold.ttf */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		86388655834146D1847AEADE /* Foundation.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5535472B1FFD4211A0309575 /* Foundation.ttf */; };
@@ -453,8 +451,6 @@
 		812FF89521DB84F9003AD4F7 /* RNAudioClipperBridge.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = RNAudioClipperBridge.m; path = clipwalking/RNAudioClipperBridge.m; sourceTree = "<group>"; };
 		812FF89721DBB6B8003AD4F7 /* RNAudioClipperBridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RNAudioClipperBridge.h; path = clipwalking/RNAudioClipperBridge.h; sourceTree = "<group>"; };
 		81A5CA0A21D45F31009EA94A /* clipwalking-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "clipwalking-Bridging-Header.h"; sourceTree = "<group>"; };
-		81C6604821E0FF6B00FA7613 /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Crashlytics.framework; sourceTree = "<group>"; };
-		81C6604921E0FF6B00FA7613 /* Fabric.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Fabric.framework; sourceTree = "<group>"; };
 		82DF8DEFE5E34185AF93659E /* RNTrackPlayer.xcodeproj */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = "wrapper.pb-project"; name = RNTrackPlayer.xcodeproj; path = "../node_modules/react-native-track-player/ios/RNTrackPlayer.xcodeproj"; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		8452E160BF4D43AAAA52C607 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
@@ -498,11 +494,9 @@
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
 				00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */,
-				81C6604B21E0FF6B00FA7613 /* Fabric.framework in Frameworks */,
 				00C302E81ABCBA2D00DB3ED1 /* libRCTImage.a in Frameworks */,
 				133E29F31AD74F7200F7D852 /* libRCTLinking.a in Frameworks */,
 				00C302E91ABCBA2D00DB3ED1 /* libRCTNetwork.a in Frameworks */,
-				81C6604A21E0FF6B00FA7613 /* Crashlytics.framework in Frameworks */,
 				139105C61AF99C1200B5F7CC /* libRCTSettings.a in Frameworks */,
 				832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */,
 				00C302EA1ABCBA2D00DB3ED1 /* libRCTVibration.a in Frameworks */,
@@ -703,8 +697,6 @@
 		81A5C93721D15D26009EA94A /* Recovered References */ = {
 			isa = PBXGroup;
 			children = (
-				81C6604821E0FF6B00FA7613 /* Crashlytics.framework */,
-				81C6604921E0FF6B00FA7613 /* Fabric.framework */,
 				B75FD56C6AB04E7DA266F56A /* libRNI18n.a */,
 				F55CE0C7DD3949FA970A46EF /* libRNVectorIcons.a */,
 				EFDAB7856C674D21BB0387C0 /* libRNI18n-tvOS.a */,
@@ -888,7 +880,6 @@
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				81C6604721E0FE8600FA7613 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -942,7 +933,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 940;
-				ORGANIZATIONNAME = Facebook;
+				ORGANIZATIONNAME = "Stutz Lab";
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
@@ -1389,6 +1380,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8153E10721E127DE00C0B9EC /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1468,23 +1460,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
-		};
-		81C6604721E0FE8600FA7613 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "./Fabric.framework/run 58450176c7021170ed5e9d8e038e48a84d34308d 9873a643997ac7fde9fea2c74ae16bd40196a925264d9eabb0efeba6d79ce9b2\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

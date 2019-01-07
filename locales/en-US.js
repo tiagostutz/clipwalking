@@ -1,15 +1,17 @@
 export default {
-    "Available at":"Available at",
+    "available at":"Available at",
+    "clips": "Clips",
     "clipping": "clipping",
     "delete": "delete",
     "discard":"discard",
     "downloading episode": "downloading episode",
     "feed": "Feed",
-    "Get the": "Get the",
+    "get the": "Get the",
     "later": "later",
     "library": "Library",
     "listen later": "Listen Later",
     "loading": "loading",
+    "my clips": "My Clips",
     "of the Podcast": "of the Podcast",
     "on hold": "on hold",
     "preview":"preview",
@@ -18,6 +20,6 @@ export default {
     "share": "share",
     "shows": "Shows",
     "summary and notes": "summary and notes",
-    "This audio was clipped from the episode": "This audio was clipped from the episode",
+    "this audio was clipped from the episode": "This audio was clipped from the episode",
     "waiting": "Waiting"
 }

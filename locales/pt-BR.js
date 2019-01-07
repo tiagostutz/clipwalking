@@ -1,15 +1,17 @@
 export default {
-    "Available at": "Disponível em",
-    "recortando": "recortando",
+    "available at": "Disponível em",
+    "clips": "Clips",
+    "clipping": "recortando",
     "delete": "excluir",
     "discard": "descartar",
     "downloading episode": "baixando episódio",
     "feed": "Feed",
-    "Get the": "Baixe o",
+    "get the": "Baixe o",
     "later": "depois",
     "loading": "carregando",
     "library": "Biblioteca",
     "listen later": "Ouvir depois",
+    "my clips": "Meus Clips",
     "of the Podcast": "do Podcast",
     "on hold": "Em espera",
     "preview": "ouvir",
@@ -18,6 +20,6 @@ export default {
     "share": "compartilhar",
     "shows": "Programas",
     "summary and notes": "resumo e notas",
-    "This audio was clipped from the episode":"Esse trecho foi retirado do episódio",
+    "this audio was clipped from the episode":"Esse trecho foi retirado do episódio",
     "waiting": "Aguardando"
 }

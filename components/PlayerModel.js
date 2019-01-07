@@ -149,7 +149,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             const lastPosition = await TrackPlayer.getPosition()
             await TrackPlayer.pause()
             this.publishPlayerUpdate()
-            return this.persistCurrentTrackState(lastPosition-3)            
+            return this.persistCurrentTrackState(lastPosition)            
         } catch (error) {
             console.error(error);        
         }

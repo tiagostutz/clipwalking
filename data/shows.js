@@ -45,6 +45,17 @@ const showData = {
             reportError(error)       
             return null         
         }
+    },
+
+    delete: async(show) => {
+        const dbShows = new PouchDB(DB_SHOWS)
+        try {
+            const res = await dbShows.remove(show)    
+            return res
+        } catch (error) {
+            reportError(error)       
+            return null         
+        }
     }
 }
 

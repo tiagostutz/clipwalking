@@ -129,7 +129,7 @@ const styles = RkStyleSheet.create(theme => ({
           flexDirection: 'row',
           justifyContent: 'space-between',
       paddingLeft: 15,
-      height: 135,
+      flex: 1,
       marginVertical: 8,
     },
     backRightBtn: {
@@ -145,8 +145,8 @@ const styles = RkStyleSheet.create(theme => ({
         right: 75
     },
     backRightBtnRight: {
-          backgroundColor: 'red',
-          right: 0
+        backgroundColor: 'red',
+        right: 0
     },
     backRightBtnLabel: {
       textAlign: "center", 

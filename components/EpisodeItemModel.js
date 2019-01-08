@@ -4,7 +4,7 @@ import topics from '../config/topics'
 import feedService from '../data/feed';
 
 export default class EpisodeItemModel extends RhelenaPresentationModel {
-    constructor({episode, remove}) {
+    constructor({episode}) {
         super();
         this.episode = episode
     }

@@ -11,6 +11,8 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
         this.shows = []
 
         showData.getAll(result => this.shows = result)
+        showData.getAll(result => console.log('+++==', JSON.stringify(result)))
+        
     }
 
     async addNewShow(rssURL) {        

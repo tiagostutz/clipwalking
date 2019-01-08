@@ -10,6 +10,16 @@ let topics = {
             }
         }
     },
+    shows: {
+        list: {
+            select: {
+                set: null
+            },
+            remove: {
+                set: null
+            }
+        }
+    },
     waiting: {
         list: {
             add: {

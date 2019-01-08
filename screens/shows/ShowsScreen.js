@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   View,
-  TouchableHighlight,
+  TouchableWithoutFeedback,
   AlertIOS,
   FlatList,
   Clipboard
@@ -75,10 +75,10 @@ export default class ShowsScreen extends React.Component {
     <View style={listScreenStyle.screen}>
       <View style={listScreenStyle.content}>
         <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-          <TouchableHighlight style={{width: 36, flexDirection: "row", justifyContent: "center", alignItems:"center", height: 30}} 
+          <TouchableWithoutFeedback style={{width: 36, flexDirection: "row", justifyContent: "center", alignItems:"center", height: 30}} 
             onPress={this.handleAddPress}>
             <Icon name={`${ICON_PREFIX}add`} color={Colors.primary} size={36}/>
-          </TouchableHighlight>
+          </TouchableWithoutFeedback>
         </View>
         <RkText style={listScreenStyle.title} rkType='header0'>{t('shows')}</RkText>
         { this.state.shows && this.state.shows.length > 0 && 

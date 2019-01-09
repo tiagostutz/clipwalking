@@ -39,6 +39,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         // listen for current track changed event
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
+
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
             if (this.currentTrackInfo && this.currentTrackInfo.id === msg.episode.id) {
                 try {                                 
@@ -74,6 +75,8 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.currentTrackInfo = episode
                 
         return new Promise(async (resolve, reject) => {
+            console.log('++++++this.currentTrackInfo',JSON.stringify(this.currentTrackInfo))
+            
             assetService.storeAudio(this.currentTrackInfo.url, async ({audioPath, originalPath}) => {  
                 
                 this.currentTrackInfo.audioPath = audioPath  

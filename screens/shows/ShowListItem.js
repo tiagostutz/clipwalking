@@ -42,6 +42,11 @@ export default class ShowListItem extends Component {
     }
 
     render() {
+
+        if (!this.state.show) {
+            return <View></View>
+        }
+
         return this.state.show &&  (
             <SwipeRow
                 onRowDidOpen={() => this.isRowOpened = true}
@@ -77,7 +82,7 @@ export default class ShowListItem extends Component {
                                 shadowRadius: 4,
                                 elevation: 4,
                             }}>
-                                { this.state.show.imageURL && <CacheableImage rkCardImg source={{uri: this.state.show.imageURL}}  /> }
+                                { this.state.show.imageURL && <CacheableImage rkCardImg source={{uri: this.state.show.imageURL.replace("http://","https://")}}  /> }
                                 { !this.state.show.imageURL && 
                                     <View>
                                         <ImageBackground rkCardImg source={require('./cover.png')}>

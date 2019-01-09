@@ -10,7 +10,7 @@ import t from '../locales';
 
 module.exports.storeAudio = async (url, callback) => {
 
-    const downloadFile = (urlParam, callbackParam) => {                
+    const downloadFile = (urlParam, callbackParam) => {                          
 
         manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode')})
 
@@ -48,6 +48,7 @@ module.exports.storeAudio = async (url, callback) => {
     const dbAudioFilePath = new PouchDB(DB_AUDIO_FILE_PATH)    
 
     try {
+        
         const audio = await dbAudioFilePath.get(url)
         
         if(!await RNFetchBlob.fs.exists(audio.originalPath)) {

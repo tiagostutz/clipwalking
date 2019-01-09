@@ -10,8 +10,18 @@ let topics = {
             }
         }
     },
+    feed: {
+        sync: {
+            finished: {
+                set: null
+            }
+        }
+    },
     shows: {
         list: {
+            add: {
+                set: null
+            },
             select: {
                 set: null
             },

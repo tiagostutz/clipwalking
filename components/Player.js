@@ -122,7 +122,7 @@ export default class Player extends Component {
                                 </View>
                             </TouchableWithoutFeedback>
                             <View>
-                                <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currentTrackInfo.image}} permanent={false} />
+                                { this.state.currentTrackInfo.image && <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currentTrackInfo.image}} permanent={false} /> }
                             </View>
                             <View style={playerStyles.maximized.trackInfo}>
                                 <TextTicker style={{ fontSize: 21 }}

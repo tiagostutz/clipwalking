@@ -2,6 +2,7 @@ import rssParser from 'react-native-rss-parser';
 import PouchDB from 'pouchdb-react-native'
 import { DB_FEED_FULL, DB_FEED_REMOVED, DB_FEED_WAITING } from '../config/variables'
 
+new PouchDB(DB_FEED_FULL).destroy()
 const feedData = {
     fetch: (url,callback, skip=0, limit=10) => {
         fetch(url)
@@ -12,62 +13,14 @@ const feedData = {
                 return callback(null, err)
             }
             const normalizedResult = rss.items.map(item => {
-                let durationSeconds = item.itunes.duration
-                if (item.itunes.duration.match(":")) {
-                    // handle different duration types
-                    let durationArr = item.itunes.duration.split(":")
-                    durationSeconds = 0
-                    if (durationArr.length == 3) {
-                        durationSeconds += parseInt(durationArr[2])
-                        durationSeconds += parseInt(durationArr[1])*60
-                        durationSeconds += parseInt(durationArr[0])*3600
-                    }
-                    if (durationArr.length == 2) {
-                        durationSeconds += parseInt(durationArr[1])
-                        durationSeconds += parseInt(durationArr[0])*60
-                    }
-                }
-                
-                item.image = item.itunes.image
-                item.author = item.itunes.authors.map(a => a.name).join(' ')
-                item.url = item.enclosures[0].url
-                item.mimeType = item.enclosures[0].mimeType
-                item.duration = durationSeconds
-                item.description = item.description.replace(/<[^>]+>/g, '')
-                item.showName = rss.title
-                item.showURL = rss.link
-                
+                feedData.loadFeed(item)
                 return item
             })
             return callback(normalizedResult.slice(skip, limit))
         });
 
     },
-    fetchShowInfo: (url,callback) => {        
-        fetch(url)
-        .then(response => response.text() )
-        .then(responseData => rssParser.parse(responseData))
-        .then((rss, err) => {
-            if (err) {
-                return callback(null, err)
-            }            
-            
-            const normalizedResult = {
-                title: rss.title,
-                description: rss.description,
-                url: rss.links.length > 0 ? rss.links[0].url : null,
-                language: rss.language,
-                copyright: rss.copyright,
-                lastUpdated: new Date(rss.items[0].published),
-                imageURL: rss.image ? rss.image.url : null,
-                authors: rss.itunes && rss.itunes.authors && rss.itunes.authors.length>0 ? rss.itunes.authors[0].name : null,
-                categories: rss.itunes.categories,
-                owner: rss.itunes.owner ? rss.itunes.owner : null
-            }
-            return callback(normalizedResult)
-        });
-
-    },
+    
     getLastUpdate: async (callback) => {
         // ** TEST PORPUSE ONLY
         // await new PouchDB(DB_FEED_FULL).destroy()
@@ -88,11 +41,7 @@ const feedData = {
         let waitingFeeds = waitingFeedsResp.total_rows===0 ? [] : waitingFeedsResp.rows.map(i => i.id)
 
         if (feedDocsResp.total_rows === 0) {
-            // get last feed update and then remove from the result the items that are present on other lists (removed or waiting)
-            feedData.syncFeed(rssItems => {
-                const filteredFeed = rssItems.filter(rss => removedFeeds.indexOf(rss.id) == -1 && waitingFeeds.indexOf(rss.id) == -1)
-                return callback(filteredFeed.sort((a,b) => new Date(b.published)-new Date(a.published)))
-            })
+            return callback([])
         }else{
             
             // remove from the result the items that are present on other lists (removed or waiting)
@@ -102,31 +51,47 @@ const feedData = {
 
     },
 
-    syncFeed: (callback) => {
+    loadFeed: async(feed) => {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
         
-        //fetches the full feed and checks whether the elements are present
-        feedData.fetch('https://www.npr.org/rss/podcast.php?id=510313',normalizedResult => {  
-
-            // return the result and leave the database sync to be made in background
-            callback(normalizedResult)
-            
-            normalizedResult.forEach(rssItem => {
+        feed.items.forEach(rssItem => {
                 
-                //if the ress item is no on the local store, insert it
-                dbFeedFull.get(rssItem.id)
-                    .catch(error => {
-                        if (error.status === 404) {
-                            rssItem._id = rssItem.id
-                            dbFeedFull.put(rssItem).catch(error => {
-                                console.error(error);                        
-                            })
-                        }
-                    })
-            })
-                        
-        })
+            let durationSeconds = rssItem.itunes.duration
+            if (rssItem.itunes.duration && rssItem.itunes.duration.match(":")) {
+                // handle different duration types
+                let durationArr = rssItem.itunes.duration.split(":")
+                durationSeconds = 0
+                if (durationArr.length == 3) {
+                    durationSeconds += parseInt(durationArr[2])
+                    durationSeconds += parseInt(durationArr[1])*60
+                    durationSeconds += parseInt(durationArr[0])*3600
+                }
+                if (durationArr.length == 2) {
+                    durationSeconds += parseInt(durationArr[1])
+                    durationSeconds += parseInt(durationArr[0])*60
+                }
+            }
+            
+            rssItem.image = rssItem.itunes.image
+            rssItem.author = rssItem.itunes.authors.map(a => a.name).join(' ')
+            rssItem.url = rssItem.enclosures[0].url
+            rssItem.mimeType = rssItem.enclosures[0].mimeType
+            rssItem.duration = durationSeconds
+            rssItem.description = rssItem.description.replace(/<[^>]+>/g, '')
+            rssItem.showName = feed.title
+            rssItem.showURL = feed.link
 
+            //if the ress item is no on the local store, insert it
+            dbFeedFull.get(rssItem.id)
+                .catch(error => {
+                    if (error.status === 404) {
+                        rssItem._id = rssItem.id
+                        dbFeedFull.put(rssItem).catch(error => {
+                            console.error(error);                        
+                        })
+                    }
+                })
+        })
     },
 
     moveToDeleted: async (feedId) => {

@@ -77,7 +77,7 @@ export default class EpisodeItem extends Component {
             <View style={styles.card}>
                 <TouchableHighlight onPress={this.onCardPress}>
                     <RkCard rkType='horizontal'>
-                        <CacheableImage rkCardImg source={{uri: this.state.episode.image}} permanent={false} />
+                        { this.state.episode.image && <CacheableImage rkCardImg source={{uri: this.state.episode.image.replace("http://","https://")}} permanent={false} /> }
                         <View rkCardContent  style={{flexDirection: "column", justifyContent: "space-between", flex: 1}}>
                             <View>
                                 <View style={styles.showDate}>

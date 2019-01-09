@@ -1,6 +1,5 @@
 import { RhelenaPresentationModel } from 'rhelena';
 import manuh from 'manuh'
-import feedData from '../../data/feed';
 import showData from '../../data/shows';
 import topics from '../../config/topics'
 import t from '../../locales'
@@ -10,9 +9,7 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
         super();
         this.shows = []
 
-        showData.getAll(result => this.shows = result)
-        showData.getAll(result => console.log('+++==', JSON.stringify(result)))
-        
+        showData.getAll(result => this.shows = result)        
     }
 
     async addNewShow(rssURL) {        
@@ -21,15 +18,18 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
 
         if (!show) {
             manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('fetching show info')})
-            feedData.fetchShowInfo(rssURL, async result => {
-                let resultEnhanced = result
-                resultEnhanced._id = rssURL
-                resultEnhanced.rssURL = rssURL
-                await showData.put(result)
-                await showData.getAll(result => this.shows = result) //refresh
-                manuh.publish(topics.loader.activity.status.set, { value: 0 })
+            showData.resolveShowInfo(rssURL, async result => { //fetch the remote rss feed info
+                showData.getAll(resultRefreshed => {  //refresh the show list
+                    this.shows = this.shows.concat(resultRefreshed)
+                    manuh.publish(topics.loader.activity.status.set, { value: 0 })
+                 })
             })
         }
         
+    }
+
+    async showAlreadyAdded(rssURL) {
+        const show = await showData.get(rssURL)        
+        return show
     }
 }

@@ -55,6 +55,13 @@ export default class ShowsScreen extends React.Component {
 
     const clipboardText = await Clipboard.getString()
     if (clipboardText.match(/[rss|feed]/g)) {
+
+      const showExists = await this.viewModel.showAlreadyAdded(clipboardText)
+
+      if (showExists) { //if the show URL in the clipboard already existis, prompt for input
+        return promptForInput()
+      }
+
       AlertIOS.alert(t('add a show'), `${t('add')} ${clipboardText}?`,[
         {
           text: 'No',

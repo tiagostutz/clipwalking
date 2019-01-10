@@ -2,9 +2,9 @@ import rssParser from 'react-native-rss-parser';
 import PouchDB from 'pouchdb-react-native'
 import { DB_FEED_FULL, DB_FEED_REMOVED, DB_FEED_WAITING } from '../config/variables'
 
-new PouchDB(DB_FEED_FULL).destroy()
+// new PouchDB(DB_FEED_FULL).destroy()
 const feedData = {
-    fetch: (url,callback, skip=0, limit=10) => {
+    fetch: (url) => {
         fetch(url)
         .then(response => response.text())
         .then(responseData => rssParser.parse(responseData))
@@ -12,13 +12,60 @@ const feedData = {
             if (err) {
                 return callback(null, err)
             }
-            const normalizedResult = rss.items.map(item => {
-                feedData.loadFeed(item)
-                return item
-            })
-            return callback(normalizedResult.slice(skip, limit))
+            rss.items.map(rssItem => feedData.prepareFeedItem(rss, rssItem))
+            return true
         });
 
+    },
+
+    loadShowFeedItems: async (showFeed)  => {
+        const dbFeedFull = new PouchDB(DB_FEED_FULL)
+        const normalizedResult = showFeed.items.map(rssItem => feedData.prepareFeedItem(showFeed, rssItem))
+
+        try {
+            await dbFeedFull.bulkDocs(normalizedResult)
+            return true
+
+        } catch (error) {
+            console.log(err);
+            return false
+        }
+    },
+
+    prepareFeedItem: (feed, rssItem) => {        
+        let durationSeconds = rssItem.itunes.duration
+        if (rssItem.itunes.duration && rssItem.itunes.duration.match(":")) {
+            // handle different duration types
+            let durationArr = rssItem.itunes.duration.split(":")
+            durationSeconds = 0
+            if (durationArr.length == 3) {
+                durationSeconds += parseInt(durationArr[2])
+                durationSeconds += parseInt(durationArr[1])*60
+                durationSeconds += parseInt(durationArr[0])*3600
+            }
+            if (durationArr.length == 2) {
+                durationSeconds += parseInt(durationArr[1])
+                durationSeconds += parseInt(durationArr[0])*60
+            }
+        }
+        
+        rssItem.image = rssItem.itunes.image
+        rssItem.author = rssItem.itunes.authors.map(a => a.name).join(' ')
+        
+        if (rssItem.enclosures[0]) {
+            rssItem.url = rssItem.enclosures[0].url
+            rssItem.mimeType = rssItem.enclosures[0].mimeType
+            if (!rssItem.duration) {
+                rssItem.duration = rssItem.enclosures[0].length
+            }
+        }
+        rssItem.duration = durationSeconds
+        rssItem.description = rssItem.description.replace(/<[^>]+>/g, '')
+        rssItem.showName = feed.title
+        rssItem.showURL = feed.link
+        rssItem._id = rssItem.id
+        
+        return rssItem
     },
     
     getLastUpdate: async (callback) => {
@@ -45,53 +92,12 @@ const feedData = {
         }else{
             
             // remove from the result the items that are present on other lists (removed or waiting)
+            console.log('+++++===>>',JSON.stringify(feedDocsResp));
             const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => removedFeeds.indexOf(doc.id) == -1 && waitingFeeds.indexOf(doc.id) == -1)
+            
             return callback(filteredFeed.sort((a,b) => new Date(b.published)-new Date(a.published)))
         }
 
-    },
-
-    loadFeed: async(feed) => {
-        const dbFeedFull = new PouchDB(DB_FEED_FULL)
-        
-        feed.items.forEach(rssItem => {
-                
-            let durationSeconds = rssItem.itunes.duration
-            if (rssItem.itunes.duration && rssItem.itunes.duration.match(":")) {
-                // handle different duration types
-                let durationArr = rssItem.itunes.duration.split(":")
-                durationSeconds = 0
-                if (durationArr.length == 3) {
-                    durationSeconds += parseInt(durationArr[2])
-                    durationSeconds += parseInt(durationArr[1])*60
-                    durationSeconds += parseInt(durationArr[0])*3600
-                }
-                if (durationArr.length == 2) {
-                    durationSeconds += parseInt(durationArr[1])
-                    durationSeconds += parseInt(durationArr[0])*60
-                }
-            }
-            
-            rssItem.image = rssItem.itunes.image
-            rssItem.author = rssItem.itunes.authors.map(a => a.name).join(' ')
-            rssItem.url = rssItem.enclosures[0].url
-            rssItem.mimeType = rssItem.enclosures[0].mimeType
-            rssItem.duration = durationSeconds
-            rssItem.description = rssItem.description.replace(/<[^>]+>/g, '')
-            rssItem.showName = feed.title
-            rssItem.showURL = feed.link
-
-            //if the ress item is no on the local store, insert it
-            dbFeedFull.get(rssItem.id)
-                .catch(error => {
-                    if (error.status === 404) {
-                        rssItem._id = rssItem.id
-                        dbFeedFull.put(rssItem).catch(error => {
-                            console.error(error);                        
-                        })
-                    }
-                })
-        })
     },
 
     moveToDeleted: async (feedId) => {

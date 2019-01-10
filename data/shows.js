@@ -1,9 +1,11 @@
 import PouchDB from 'pouchdb-react-native'
 import rssParser from 'react-native-rss-parser';
+import manuh from 'manuh'
+import topics from '../config/topics'
 import { DB_SHOWS } from '../config/variables'
 import { reportError } from '../utils/reporter'
 
-new PouchDB(DB_SHOWS).destroy()
+// new PouchDB(DB_SHOWS).destroy()
 const showData = {
     getAll: async (callback) => {
         const dbShows = new PouchDB(DB_SHOWS)
@@ -65,7 +67,7 @@ const showData = {
                 owner: rss.itunes.owner ? rss.itunes.owner : null
             }
             await showData.put(normalizedResult) //save the show info to local database
-
+            manuh.publish(topics.shows.new.created.set, { value: 1, showRSS: rss }) //notify the world of the show creation
             return callback(normalizedResult, rss)
         });
 

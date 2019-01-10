@@ -74,9 +74,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
     async playEpisode(episode) {
         this.currentTrackInfo = episode
                 
-        return new Promise(async (resolve, reject) => {
-            console.log('++++++this.currentTrackInfo',JSON.stringify(this.currentTrackInfo))
-            
+        return new Promise(async (resolve, reject) => {            
             assetService.storeAudio(this.currentTrackInfo.url, async ({audioPath, originalPath}) => {  
                 
                 this.currentTrackInfo.audioPath = audioPath  

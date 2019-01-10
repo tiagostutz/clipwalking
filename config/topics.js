@@ -28,6 +28,11 @@ let topics = {
             remove: {
                 set: null
             }
+        },
+        new: {
+            created: {
+                set: null
+            }
         }
     },
     waiting: {

@@ -15,8 +15,6 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
         })
 
         manuh.subscribe(topics.shows.selected.deleted.set, "FeedScreenModel", ({value, showRSS}) => {
-            console.log('++...',topics.shows.selected.deleted.set);
-            
             if (value === 1) {
                 feedData.deleteShowFeedItems(showRSS) 
             }

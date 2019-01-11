@@ -13,6 +13,7 @@ new PouchDB(DB_FEED_FULL).createIndex({
     index: {fields: ['showURL']}
 }).catch(error => {
     console.error(error);    
+    new PouchDB(DB_FEED_FULL).destroy()
 })
 
 const feedData = {
@@ -47,9 +48,7 @@ const feedData = {
 
     deleteShowFeedItems: async (showFeed)  => {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
-        try {
-            
-            console.log('+++>>><<<<',topics.shows.selected.deleted.set);
+        try {            
             const feeds = await dbFeedFull.find({
                 selector: {
                     showURL: { $eq: showFeed.url }
@@ -57,12 +56,16 @@ const feedData = {
             })
 
             const deleteBulk = feeds.docs.map(f => { 
-                f["_deleted"] = true
-                return f
+                return {
+                    _id: f._id,
+                    _rev: f._rev,
+                    _deleted: true
+                }
             })
-            console.log('+++==>>>', JSON.stringify(deleteBulk[0]))
             
-            dbFeedFull.bulkDocs(deleteBulk)
+            console.log('+++==bulkDocs', JSON.stringify(deleteBulk[0]))
+            
+            await dbFeedFull.bulkDocs(deleteBulk)
 
             manuh.publish(topics.shows.episodes.deleted.set, { value: 1, show: showFeed })
             

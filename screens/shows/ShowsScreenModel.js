@@ -10,6 +10,10 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
         this.shows = []
 
         showData.getAll(result => this.shows = result)        
+
+        manuh.subscribe(topics.shows.list.remove.set, "ShowsScreenModel", () => {
+            showData.getAll(result => this.shows = result)        
+        })
     }
 
     async addNewShow(rssURL) {        

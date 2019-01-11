@@ -14,8 +14,9 @@ import {
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import imageCacheHoc from 'react-native-image-cache-hoc';
-import { SwipeRow } from 'react-native-swipe-list-view'
-
+import Swipeable from 'react-native-swipeable';
+import manuh from 'manuh'
+import topics from '../../config/topics'
 import t from '../../locales'
 import ShowListItemModel from './ShowListItemModel'
 import { ICON_PREFIX } from '../../config/variables'
@@ -28,17 +29,36 @@ export default class ShowListItem extends Component {
     constructor(props) {
         super(props)
         this.isRowOpened = false
+        this.swipeable = null
+
+        manuh.subscribe(topics.shows.list.scrolling.set, this.props.show.id, ({value}) => {
+            if (value === 1) {
+                this.swipeable.recenter()
+            }
+        })
     }
 
     componentWillMount() {
         attachModelToView(new ShowListItemModel(this.props), this)
     }
 
+    componentWillUnmount() {
+        manuh.unsubscribe(topics.shows.list.scrolling.set, this.props.show.id)
+    }
 
-    onCardPress = () => {         
+
+    onCardPress() {         
         if (!this.isRowOpened)  {
             this.viewModel.selectShow()
         } 
+    }
+
+    onSwipeStart(){
+        manuh.publish(topics.shows.swipe.opening.set, { value: 1, show: this.state.show })
+    }
+
+    onSwipeRelease() {
+        manuh.publish(topics.shows.swipe.release.set, { value: 1, show: this.state.show })
     }
 
     render() {
@@ -47,30 +67,29 @@ export default class ShowListItem extends Component {
             return <View></View>
         }
 
-        return this.state.show &&  (
-            <SwipeRow
-                onRowDidOpen={() => this.isRowOpened = true}
-                onRowDidClose={() => this.isRowOpened = false}
-                rightOpenValue={-75}
-                previewOpenDelay={3000}
-                disableRightSwipe={true}
-                preview={false}
-                directionalDistanceChangeThreshold={0}
-                swipeToOpenPercent={20}
-            >
-                <View style={styles.rowBack}>
-                    <TouchableOpacity style={[styles.backRightBtn, styles.backRightBtnRight]} onPress={() => this.viewModel.removeShow()}>
-                        <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
-                        <RkText style={styles.backRightBtnLabel}>{t('delete')}</RkText>
-                    </TouchableOpacity>
+        const rightButtons = [
+            <TouchableOpacity style={[styles.backButton, styles.backDeleteButton]} onPress={() => this.viewModel.removeShow()}>
+                <View style={styles.innerButtonView}>
+                    <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
+                    <RkText style={styles.backButtonLabel}>{t('delete')}</RkText>
                 </View>
+            </TouchableOpacity>
+        ]
 
+        return this.state.show &&  (
+            <Swipeable 
+                onSwipeComplete={() => this.isRowOpened = !this.isRowOpened}
+                onSwipeStart={() => this.onSwipeStart()}
+                onSwipeRelease={() => this.onSwipeRelease()}
+                onRef={ref => this.swipeable = ref}
+                rightButtons={rightButtons} 
+            >
                 <View style={styles.card}>
                     <View style={{padding: 3, paddingBottom: 10}}>
                         <TouchableHighlight
                             delayPressIn={70}
                             activeOpacity={0.8}
-                            onPress={this.onCardPress}
+                            onPress={() => this.onCardPress()}
                         >
                             <RkCard style={{borderWidth: 4, borderColor: Colors.background,
                                 shadowColor: "#000",
@@ -94,7 +113,7 @@ export default class ShowListItem extends Component {
                         </TouchableHighlight>
                     </View>
                 </View>
-            </SwipeRow>
+            </Swipeable>
         )
     }
 }
@@ -109,32 +128,21 @@ const styles = RkStyleSheet.create(theme => ({
     footer: {
       width: "100%",
     },
-    rowBack: {
-        alignItems: 'center',
-        backgroundColor: '#DDD',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingLeft: 15,
-        margin: 10,
-        flex: 1
+    backButton: {
+        flex: 1, 
+        alignItems: 'flex-start', 
+        justifyContent: 'center'
     },
-    backRightBtn: {
-        alignItems: 'center',
-        bottom: 0,
-        justifyContent: 'center',
-        position: 'absolute',
-        top: 0,
-        width: 75
-    },
-    backRightBtnRight: {
-        backgroundColor: 'red',
-        right: 0
-    },
-    backRightBtnLabel: {
-        textAlign: "center", 
-        margin:10, 
-        marginTop: 0, 
+    backButtonLabel: {
         color: "white", 
-        fontSize: 12
-      },
+        fontSize: 12,
+    },
+    backDeleteButton: {
+        backgroundColor: 'red',        
+    },
+    innerButtonView: {
+        width: 70, 
+        alignItems: 'center', 
+        justifyContent: 'center'
+    },
   }));

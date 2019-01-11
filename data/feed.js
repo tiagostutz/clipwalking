@@ -61,9 +61,7 @@ const feedData = {
                     _rev: f._rev,
                     _deleted: true
                 }
-            })
-            
-            console.log('+++==bulkDocs', JSON.stringify(deleteBulk[0]))
+            })            
             
             await dbFeedFull.bulkDocs(deleteBulk)
 
@@ -131,6 +129,16 @@ const feedData = {
             
             // remove from the result the items that are present on other lists (removed or waiting)
             const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
+            
+            filteredFeed.forEach(f => {
+                if (f.image && !f.image.match("file:") && !f.image.match("https:")) {
+                    if (f.image.match("http:")) {
+                        f.image = f.image.replace("http:", "https:")
+                    }else{
+                        f.image = "https://"+f.image
+                    }
+                }
+            })
             return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
         }
 

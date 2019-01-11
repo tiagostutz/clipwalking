@@ -13,6 +13,9 @@ import { attachModelToView } from 'rhelena'
 import {
   RkText
 } from 'react-native-ui-kitten';
+
+import manuh from 'manuh'
+import topics from '../../config/topics'
  
 import ShowsScreenModel from './ShowsScreenModel'
 import { listScreenStyle } from '../../config/styles'
@@ -27,6 +30,18 @@ export default class ShowsScreen extends React.Component {
 
   constructor() {
     super()
+
+    this.state = { isSwiping:false }
+    manuh.subscribe(topics.shows.swipe.opening.set, "ShowsScreen", ({value}) => {
+      if (value === 1) {
+        this.setState({isSwiping: true})
+      }
+    })
+    manuh.subscribe(topics.shows.swipe.release.set, "ShowsScreen", ({value}) => {
+      if (value === 1) {
+        this.setState({isSwiping: false})
+      }
+    })
   }
 
   static navigationOptions = {
@@ -78,18 +93,25 @@ export default class ShowsScreen extends React.Component {
     }
   } 
 
+  onScroll() {
+    manuh.publish(topics.shows.list.scrolling.set, { value: 1 })
+  }
+
   render = () => (
     <View style={listScreenStyle.screen}>
       <View style={listScreenStyle.content}>
         <View style={{flexDirection: "row", justifyContent: "flex-end"}}>
-          <TouchableWithoutFeedback style={{width: 36, flexDirection: "row", justifyContent: "center", alignItems:"center", height: 30}} 
-            onPress={this.handleAddPress}>
-            <Icon name={`${ICON_PREFIX}add`} color={Colors.primary} size={36}/>
+          <TouchableWithoutFeedback onPress={this.handleAddPress}>
+            <Icon name={`${ICON_PREFIX}add`} color={Colors.primary} size={36} style={{paddingHorizontal: 15}} />
           </TouchableWithoutFeedback>
         </View>
         <RkText style={listScreenStyle.title} rkType='header0'>{t('shows')}</RkText>
         { this.state.shows && this.state.shows.length > 0 && 
-          <FlatList
+          <FlatList 
+            onMomentumScrollBegin={() => this.setState({isSwiping: false})}
+            onScroll={this.onScroll}
+            scrollEnabled={!this.state.isSwiping}
+            initialNumToRender={10}
             data={this.state.shows}
             renderItem={({ item }) => <ShowListItem show={item} />}
             keyExtractor={(item) => `${item.id}`}

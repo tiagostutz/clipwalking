@@ -7,8 +7,19 @@ let topics = {
             },
             remove: {
                 set: null
+            },
+            scrolling: {
+                set: null
             }
-        }
+        },
+        swipe: {
+            opening: {
+                set: null
+            },
+            release: {
+                set: null
+            }
+        },
     },
     shows: {
         list: {
@@ -19,6 +30,17 @@ let topics = {
                 set: null
             },
             remove: {
+                set: null
+            },
+            scrolling: {
+                set: null
+            }
+        },
+        swipe: {
+            opening: {
+                set: null
+            },
+            release: {
                 set: null
             }
         },

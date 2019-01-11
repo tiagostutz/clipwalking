@@ -50,6 +50,7 @@ export default class WaitingScreen extends React.Component {
           <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
           { this.state.waitingData && this.state.waitingData.length > 0 && 
             <FlatList
+              initialNumToRender={10}
               data={this.state.waitingData}
               renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
               keyExtractor={(item) => `${item.id}`}

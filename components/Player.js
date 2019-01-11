@@ -110,6 +110,7 @@ export default class Player extends Component {
                     </View>        
                 )
             }else{
+                
                 playerComponent = (
                     this.state.currentTrackInfo &&
                     <View style={playerStyles.maximized.container}>

@@ -11,7 +11,7 @@ export default class ShowListItemModel extends RhelenaPresentationModel {
     }
 
     selectShow() {
-
+        console.log('+++++=== SELECT SHOW');        
     }
 
     async removeShow() {        

@@ -14,7 +14,7 @@ export default class EpisodeItemModel extends RhelenaPresentationModel {
     }
 
     removeEpisode() {
-        const res = feedService.moveToDeleted(this.episode.id)
+        const res = feedService.delete(this.episode)
         if (res) {
             manuh.publish(topics.episodes.list.remove.set, { episode: this.episode })
             this.episode = null

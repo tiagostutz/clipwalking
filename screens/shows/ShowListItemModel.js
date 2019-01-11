@@ -14,7 +14,7 @@ export default class ShowListItemModel extends RhelenaPresentationModel {
 
     }
 
-    async removeShow() {
+    async removeShow() {        
         const res = await showData.delete(this.show)
         if (res) {
             manuh.publish(topics.shows.list.remove.set, { show: this.show })

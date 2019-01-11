@@ -10,13 +10,6 @@ let topics = {
             }
         }
     },
-    feed: {
-        sync: {
-            finished: {
-                set: null
-            }
-        }
-    },
     shows: {
         list: {
             add: {
@@ -31,6 +24,19 @@ let topics = {
         },
         new: {
             created: {
+                set: null
+            }
+        },
+        selected: {
+            deleted: {
+                set: null
+            }
+        },
+        episodes: {
+            deleted: {
+                set: null
+            },
+            loaded: {
                 set: null
             }
         }

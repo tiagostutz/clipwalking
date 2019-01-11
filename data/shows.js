@@ -52,7 +52,7 @@ const showData = {
             }            
             
             const rssURL = rss.links.length > 0 ? rss.links[0].url : null
-            const normalizedResult = {
+            const normalizedResult = Object.assign(rss,{
                 _id: url,
                 url: url,
                 showURL: rssURL,
@@ -65,9 +65,9 @@ const showData = {
                 authors: rss.itunes && rss.itunes.authors && rss.itunes.authors.length>0 ? rss.itunes.authors[0].name : null,
                 categories: rss.itunes.categories,
                 owner: rss.itunes.owner ? rss.itunes.owner : null
-            }
+            })
             await showData.put(normalizedResult) //save the show info to local database
-            manuh.publish(topics.shows.new.created.set, { value: 1, showRSS: rss }) //notify the world of the show creation
+            manuh.publish(topics.shows.new.created.set, { value: 1, showRSS: normalizedResult }) //notify the world of the show creation
             return callback(normalizedResult, rss)
         });
 
@@ -87,7 +87,8 @@ const showData = {
     delete: async(show) => {
         const dbShows = new PouchDB(DB_SHOWS)
         try {
-            const res = await dbShows.remove(show)    
+            const res = await dbShows.remove(show) 
+            manuh.publish(topics.shows.selected.deleted.set, { value: 1, showRSS: show }) //notify the world of the show creation   
             return res
         } catch (error) {
             reportError(error)       

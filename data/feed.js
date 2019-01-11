@@ -1,8 +1,20 @@
 import rssParser from 'react-native-rss-parser';
 import PouchDB from 'pouchdb-react-native'
-import { DB_FEED_FULL, DB_FEED_REMOVED, DB_FEED_WAITING } from '../config/variables'
+import find from 'pouchdb-find'
+import manuh from 'manuh'
+import { DB_FEED_FULL, DB_FEED_WAITING } from '../config/variables'
+import topics from '../config/topics'
+
+PouchDB.plugin(find)
 
 // new PouchDB(DB_FEED_FULL).destroy()
+
+new PouchDB(DB_FEED_FULL).createIndex({
+    index: {fields: ['showURL']}
+}).catch(error => {
+    console.error(error);    
+})
+
 const feedData = {
     fetch: (url) => {
         fetch(url)
@@ -21,14 +33,41 @@ const feedData = {
     loadShowFeedItems: async (showFeed)  => {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
         const normalizedResult = showFeed.items.map(rssItem => feedData.prepareFeedItem(showFeed, rssItem))
-
+        
         try {
             await dbFeedFull.bulkDocs(normalizedResult)
+            manuh.publish(topics.shows.episodes.loaded.set, { value: 1, show: showFeed})
             return true
 
         } catch (error) {
-            console.log(err);
+            console.log(error);
             return false
+        }
+    },
+
+    deleteShowFeedItems: async (showFeed)  => {
+        const dbFeedFull = new PouchDB(DB_FEED_FULL)
+        try {
+            
+            console.log('+++>>><<<<',topics.shows.selected.deleted.set);
+            const feeds = await dbFeedFull.find({
+                selector: {
+                    showURL: { $eq: showFeed.url }
+                }
+            })
+
+            const deleteBulk = feeds.docs.map(f => { 
+                f["_deleted"] = true
+                return f
+            })
+            console.log('+++==>>>', JSON.stringify(deleteBulk[0]))
+            
+            dbFeedFull.bulkDocs(deleteBulk)
+
+            manuh.publish(topics.shows.episodes.deleted.set, { value: 1, show: showFeed })
+            
+        } catch (error) {
+            
         }
     },
 
@@ -62,54 +101,46 @@ const feedData = {
         rssItem.duration = durationSeconds
         rssItem.description = rssItem.description.replace(/<[^>]+>/g, '')
         rssItem.showName = feed.title
-        rssItem.showURL = feed.link
+        rssItem.showURL = feed.url        
         rssItem._id = rssItem.id
         
         return rssItem
     },
     
-    getLastUpdate: async (callback) => {
+    getLastUpdate: async (callback, skip=0, limit=30) => {
         // ** TEST PORPUSE ONLY
         // await new PouchDB(DB_FEED_FULL).destroy()
-        // await new PouchDB(DB_FEED_REMOVED).destroy()
         // await new PouchDB(DB_FEED_WAITING).destroy()
         // -- ** TEST PORPUSE ONLY
 
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
-        const dbFeedRemoved = new PouchDB(DB_FEED_REMOVED)
         const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
 
         // retrieve the last fetched feed items
-        const feedDocsResp = await dbFeedFull.allDocs({include_docs: true})
-        const removedFeedsResp = await dbFeedRemoved.allDocs()
+        const feedDocsResp = await dbFeedFull.allDocs({"include_docs": true})        
         const waitingFeedsResp = await dbFeedWaiting.allDocs()
-
-        let removedFeeds = removedFeedsResp.total_rows===0 ? [] : removedFeedsResp.rows.map(i => i.id)
+        
         let waitingFeeds = waitingFeedsResp.total_rows===0 ? [] : waitingFeedsResp.rows.map(i => i.id)
-
+        
         if (feedDocsResp.total_rows === 0) {
             return callback([])
         }else{
             
             // remove from the result the items that are present on other lists (removed or waiting)
-            console.log('+++++===>>',JSON.stringify(feedDocsResp));
-            const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => removedFeeds.indexOf(doc.id) == -1 && waitingFeeds.indexOf(doc.id) == -1)
-            
-            return callback(filteredFeed.sort((a,b) => new Date(b.published)-new Date(a.published)))
+            const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
+            return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
         }
 
     },
 
-    moveToDeleted: async (feedId) => {
-        const dbFeedRemoved = new PouchDB(DB_FEED_REMOVED)
+    delete: async (feed) => {
+        const dbFeedFull = new PouchDB(DB_FEED_FULL)
         try {
-            const deletedRef = await dbFeedRemoved.get(feedId)
+            const deletedRef = await dbFeedFull.remove(feed)
             return deletedRef //if the item is already removed, just return it
         } catch (error) {
-            if (error.status === 404) {
-                const deletedRef = {_id: feedId, id: feedId}
-                await dbFeedRemoved.put(deletedRef) //add the item to removed database an return
-                return deletedRef
+            if (error.status !== 404) {
+                console.error(error);                
             }
         }
     },

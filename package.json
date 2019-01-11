@@ -11,6 +11,7 @@
     "charol": "^0.3.0",
     "manuh": "^1.4.0",
     "moment": "^2.23.0",
+    "pouchdb-find": "^7.0.0",
     "pouchdb-react-native": "^6.4.1",
     "react": "16.6.3",
     "react-native": "0.57.8",

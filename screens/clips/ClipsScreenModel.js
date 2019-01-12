@@ -7,7 +7,7 @@ export default class ClipsScreenModel extends RhelenaPresentationModel {
         this.clipData = []
         clipService.getAll((result, err) => {
             if (err) {
-                return console.error(err)                
+                return reportError(err)                
             }
             this.clipData = result
         })

@@ -9,6 +9,7 @@ import trackService from '../data/tracks'
 import clipService from '../data/clips'
 import topics from '../config/topics'
 
+import { reportError } from '../utils/reporter'
 import t from '../locales';
 
 const { clip } = NativeModules.AudioClipper
@@ -50,7 +51,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                         this.play()
                     }
                 } catch (error) {
-                    console.error(error);                    
+                    reportError(error);                    
                 }
             }else{
                 
@@ -104,12 +105,12 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }
     
             if (!this.playerReady) {
-                console.error("The player is not ready yet and hence cannot be used")            
+                reportError("The player is not ready yet and hence cannot be used")            
                 return
             }
     
             if (!trackList && !this.currentTrackInfo) {
-                console.error("The `trackList` param cannot be empty. Please spicify a track to be played.")            
+                reportError("The `trackList` param cannot be empty. Please spicify a track to be played.")            
                 return
             }else if(!trackList && this.currentTrackInfo){ //if it is just a "resume"
                 return playAndPublish()
@@ -134,7 +135,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             TrackPlayer.seekTo(doc.position) //resume from where it stopped
             
         } catch (error) {
-            console.error(error);                    
+            reportError(error);                    
         }
     }
 
@@ -145,7 +146,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             this.publishPlayerUpdate()
             return this.persistCurrentTrackState(lastPosition)            
         } catch (error) {
-            console.error(error);        
+            reportError(error);        
         }
     }
 
@@ -175,7 +176,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             }
             return null            
         } catch (error) {
-            console.error(error);         
+            reportError(error);         
         }
         
     }
@@ -201,7 +202,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             this.publishIsWorking(1)
             clip(this.currentTrackInfo.audioPath, this.currentClip.start, this.currentClip.end, async (error, response) => {
                 if (error) {
-                    console.error(error);                
+                    reportError(error);                
                     return
                 }
                 this.lastAudioClipFilePath = "file://"+response.filePath

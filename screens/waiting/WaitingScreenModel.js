@@ -11,7 +11,7 @@ export default class WaitingScreenModel extends RhelenaPresentationModel {
         this.waitingData = []
         feedService.getWaitingList((result, err) => {
             if (err) {
-                return console.error(err);                
+                return reportError(err);                
             }
             this.waitingData = result
         })

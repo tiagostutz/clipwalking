@@ -5,6 +5,7 @@ import manuh from 'manuh'
 import { DB_FEED_FULL, DB_FEED_WAITING } from '../config/variables'
 import topics from '../config/topics'
 import { httpsURL } from '../utils/text'
+import { reportError } from '../utils/reporter'
 PouchDB.plugin(find)
 
 // new PouchDB(DB_FEED_FULL).destroy()
@@ -12,8 +13,7 @@ PouchDB.plugin(find)
 new PouchDB(DB_FEED_FULL).createIndex({
     index: {fields: ['showURL']}
 }).catch(error => {
-    console.error(error);    
-    new PouchDB(DB_FEED_FULL).destroy()
+    reportError(error)    
 })
 
 const feedData = {
@@ -21,7 +21,7 @@ const feedData = {
         const urlDownload = httpsURL(url)
 
         fetch(urlDownload)
-        .catch(err => console.error(err))
+        .catch(err => reportError(err))
         .then(response => response.text())
         .then(responseData => rssParser.parse(responseData))
         .then((rss, err) => {
@@ -45,7 +45,7 @@ const feedData = {
             return true
 
         } catch (error) {
-            console.log(error);
+            reportError(error)
             return false
         }
     },
@@ -72,13 +72,12 @@ const feedData = {
             manuh.publish(topics.shows.episodes.deleted.set, { value: 1, show: showFeed })
             
         } catch (error) {
-            
+            reportError(error)
         }
     },
 
     prepareFeedItem: (feed, rssItem) => {        
         let durationSeconds = rssItem.itunes.duration
-        console.log('++++==?>rssItem.itunes', JSON.stringify(rssItem.itunes));
         
         if (rssItem.itunes.duration && rssItem.itunes.duration.match(":")) {
             // handle different duration types
@@ -90,8 +89,6 @@ const feedData = {
                 durationSeconds += parseInt(durationArr[0])*3600
             }
             if (durationArr.length == 2) {
-                console.log('+++durationArr',durationArr);
-                
                 durationSeconds += parseInt(durationArr[1])
                 durationSeconds += parseInt(durationArr[0])*60
             }
@@ -124,24 +121,29 @@ const feedData = {
         // await new PouchDB(DB_FEED_WAITING).destroy()
         // -- ** TEST PORPUSE ONLY
 
-        const dbFeedFull = new PouchDB(DB_FEED_FULL)
-        const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
-
-        // retrieve the last fetched feed items
-        const feedDocsResp = await dbFeedFull.allDocs({"include_docs": true})        
-        const waitingFeedsResp = await dbFeedWaiting.allDocs()
-        
-        let waitingFeeds = waitingFeedsResp.total_rows===0 ? [] : waitingFeedsResp.rows.map(i => i.id)
-        
-        if (feedDocsResp.total_rows === 0) {
-            return callback([])
-        }else{
+        try {
+            const dbFeedFull = new PouchDB(DB_FEED_FULL)
+            const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
+    
+            // retrieve the last fetched feed items
+            const feedDocsResp = await dbFeedFull.allDocs({"include_docs": true})        
+            const waitingFeedsResp = await dbFeedWaiting.allDocs()
             
-            // remove from the result the items that are present on other lists (removed or waiting)
-            const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
+            let waitingFeeds = waitingFeedsResp.total_rows===0 ? [] : waitingFeedsResp.rows.map(i => i.id)
             
-            filteredFeed.forEach(f => f.image = httpsURL(f.image))
-            return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
+            if (feedDocsResp.total_rows === 0) {
+                return callback([])
+            }else{
+                
+                // remove from the result the items that are present on other lists (removed or waiting)
+                const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
+                
+                filteredFeed.forEach(f => f.image = httpsURL(f.image))
+                return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
+            }
+            
+        } catch (error) {
+            reportError(error)
         }
 
     },
@@ -152,9 +154,10 @@ const feedData = {
             const deletedRef = await dbFeedFull.remove(feed)
             return deletedRef //if the item is already removed, just return it
         } catch (error) {
-            if (error.status !== 404) {
-                console.error(error);                
+            if (error.status === 404) {
+                return null
             }
+            reportError(error);                
         }
     },
 
@@ -166,10 +169,10 @@ const feedData = {
             return deletedRef.ok            
 
         } catch (error) {
-            if (error.status !== 404) {
-                console.error(error)
+            if (error.status === 404) {
                 return null
             }
+            reportError(error)
         }
     },
 
@@ -184,24 +187,31 @@ const feedData = {
                 const waitingRef = {_id: feedId, id: feedId}
                 await dbFeedWaiting.put(waitingRef) //add the item to removed database an return
                 return waitingRef
+            }else{
+                reportError(error)
             }
         }
     },
 
     getWaitingList: async (callback) => {
-        const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
-        const dbFeedFull = new PouchDB(DB_FEED_FULL)
-
-        const respWaitingIds = await dbFeedWaiting.allDocs()
-        if (respWaitingIds.total_rows === 0) {
-            return callback([])
+        try {
+            const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
+            const dbFeedFull = new PouchDB(DB_FEED_FULL)
+    
+            const respWaitingIds = await dbFeedWaiting.allDocs()
+            if (respWaitingIds.total_rows === 0) {
+                return callback([])
+            }
+            const docsIds = respWaitingIds.rows.map(r => r.id)                        
+            const respDocs = await dbFeedFull.allDocs({include_docs: true})        
+            
+            callback(respDocs.rows.map(r => r.doc)
+                                .filter(d => docsIds.indexOf(d.id) != -1)
+                                .sort((a,b) => new Date(b.published)-new Date(a.published)) )
+            
+        } catch (error) {
+            reportError(error)
         }
-        const docsIds = respWaitingIds.rows.map(r => r.id)                        
-        const respDocs = await dbFeedFull.allDocs({include_docs: true})        
-        
-        callback(respDocs.rows.map(r => r.doc)
-                            .filter(d => docsIds.indexOf(d.id) != -1)
-                            .sort((a,b) => new Date(b.published)-new Date(a.published)) )
     },
 
     removeFromWaiting: async(feedId) => {
@@ -212,10 +222,10 @@ const feedData = {
             return waitingRef.ok            
 
         } catch (error) {
-            if (error.status !== 404) {
-                console.error(error)
+            if (error.status === 404) {
                 return null
             }
+            reportError(error)
         }
     },
 

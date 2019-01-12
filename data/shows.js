@@ -47,7 +47,7 @@ const showData = {
         }
 
         fetch(urlDownload)
-        .catch(err => console.error(err))
+        .catch(err => reportError(err))
         .then(response => response.text() )
         .then(responseData => rssParser.parse(responseData))
         .then( async (rss, err) => {

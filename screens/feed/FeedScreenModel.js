@@ -38,7 +38,7 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
     updateFeed() {
         feedData.getLastUpdate((result, err) => {
             if (err) {
-                return console.error(err)                
+                return reportError(err)                
             }
             this.feedData = result
         })

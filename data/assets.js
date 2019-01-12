@@ -64,7 +64,7 @@ module.exports.storeAudio = async (url, callback) => {
         if (error.status === 404) {
             downloadFile(url, callback)
         }else{
-            console.error(error)        
+            reportError(error)        
         }
     }
 }

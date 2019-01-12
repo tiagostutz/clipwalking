@@ -4,7 +4,7 @@ import find from 'pouchdb-find'
 import manuh from 'manuh'
 import { DB_FEED_FULL, DB_FEED_WAITING } from '../config/variables'
 import topics from '../config/topics'
-
+import { httpsURL } from '../utils/text'
 PouchDB.plugin(find)
 
 // new PouchDB(DB_FEED_FULL).destroy()
@@ -18,16 +18,20 @@ new PouchDB(DB_FEED_FULL).createIndex({
 
 const feedData = {
     fetch: (url) => {
-        fetch(url)
+        const urlDownload = httpsURL(url)
+
+        fetch(urlDownload)
+        .catch(err => console.error(err))
         .then(response => response.text())
         .then(responseData => rssParser.parse(responseData))
         .then((rss, err) => {
+            rss.url = urlDownload
             if (err) {
                 return callback(null, err)
             }
             rss.items.map(rssItem => feedData.prepareFeedItem(rss, rssItem))
             return true
-        });
+        })
 
     },
 
@@ -74,6 +78,8 @@ const feedData = {
 
     prepareFeedItem: (feed, rssItem) => {        
         let durationSeconds = rssItem.itunes.duration
+        console.log('++++==?>rssItem.itunes', JSON.stringify(rssItem.itunes));
+        
         if (rssItem.itunes.duration && rssItem.itunes.duration.match(":")) {
             // handle different duration types
             let durationArr = rssItem.itunes.duration.split(":")
@@ -84,12 +90,14 @@ const feedData = {
                 durationSeconds += parseInt(durationArr[0])*3600
             }
             if (durationArr.length == 2) {
+                console.log('+++durationArr',durationArr);
+                
                 durationSeconds += parseInt(durationArr[1])
                 durationSeconds += parseInt(durationArr[0])*60
             }
         }
         
-        rssItem.image = rssItem.itunes.image
+        rssItem.image = httpsURL(rssItem.itunes.image)
         rssItem.author = rssItem.itunes.authors.map(a => a.name).join(' ')
         
         if (rssItem.enclosures[0]) {
@@ -102,7 +110,9 @@ const feedData = {
         rssItem.duration = durationSeconds
         rssItem.description = rssItem.description.replace(/<[^>]+>/g, '')
         rssItem.showName = feed.title
-        rssItem.showURL = feed.url        
+        rssItem.showURL = httpsURL(feed.url)
+        rssItem.showImage = httpsURL(feed.image.url)
+        
         rssItem._id = rssItem.id
         
         return rssItem
@@ -130,15 +140,7 @@ const feedData = {
             // remove from the result the items that are present on other lists (removed or waiting)
             const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
             
-            filteredFeed.forEach(f => {
-                if (f.image && !f.image.match("file:") && !f.image.match("https:")) {
-                    if (f.image.match("http:")) {
-                        f.image = f.image.replace("http:", "https:")
-                    }else{
-                        f.image = "https://"+f.image
-                    }
-                }
-            })
+            filteredFeed.forEach(f => f.image = httpsURL(f.image))
             return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
         }
 

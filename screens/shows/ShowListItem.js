@@ -14,7 +14,9 @@ import {
 
 import Icon from 'react-native-vector-icons/Ionicons'
 import imageCacheHoc from 'react-native-image-cache-hoc';
-import Swipeable from 'react-native-swipeable';
+
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+
 import manuh from 'manuh'
 import topics from '../../config/topics'
 import t from '../../locales'
@@ -28,12 +30,11 @@ export default class ShowListItem extends Component {
 
     constructor(props) {
         super(props)
-        this.isRowOpened = false
-        this.swipeable = null
 
+        this.swipe = null
         manuh.subscribe(topics.shows.list.scrolling.set, this.props.show.id, ({value}) => {
             if (value === 1) {
-                this.swipeable.recenter()
+                this.closeSwipe()
             }
         })
     }
@@ -46,19 +47,16 @@ export default class ShowListItem extends Component {
         manuh.unsubscribe(topics.shows.list.scrolling.set, this.props.show.id)
     }
 
-
     onCardPress() {         
         if (!this.isRowOpened)  {
             this.viewModel.selectShow()
         } 
     }
-
-    onSwipeStart(){
-        manuh.publish(topics.shows.swipe.opening.set, { value: 1, show: this.state.show })
-    }
-
-    onSwipeRelease() {
-        manuh.publish(topics.shows.swipe.release.set, { value: 1, show: this.state.show })
+    
+    closeSwipe() {
+        if (this.swipe) {
+            this.swipe.close()
+        }
     }
 
     render() {
@@ -68,7 +66,7 @@ export default class ShowListItem extends Component {
         }
 
         const rightButtons = [
-            <TouchableOpacity style={[styles.backButton, styles.backDeleteButton]} onPress={() => this.viewModel.removeShow()}>
+            <TouchableOpacity key={1} style={[styles.backButton, styles.backDeleteButton]} onPress={() => this.viewModel.removeShow()}>
                 <View style={styles.innerButtonView}>
                     <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
                     <RkText style={styles.backButtonLabel}>{t('delete')}</RkText>
@@ -76,14 +74,13 @@ export default class ShowListItem extends Component {
             </TouchableOpacity>
         ]
 
+        const rightButtonsView = (
+            <View style={{ width: 64*rightButtons.length, marginTop: 10, marginBottom: 10, flexDirection: 'row' }}>
+                { rightButtons }
+            </View>
+        )
         return this.state.show &&  (
-            <Swipeable 
-                onSwipeComplete={() => this.isRowOpened = !this.isRowOpened}
-                onSwipeStart={() => this.onSwipeStart()}
-                onSwipeRelease={() => this.onSwipeRelease()}
-                onRef={ref => this.swipeable = ref}
-                rightButtons={rightButtons} 
-            >
+            <Swipeable renderRightActions={() => rightButtonsView} ref={ref => this.swipe = ref}>
                 <View style={styles.card}>
                     <View style={{padding: 3, paddingBottom: 10}}>
                         <TouchableHighlight
@@ -130,12 +127,16 @@ const styles = RkStyleSheet.create(theme => ({
     },
     backButton: {
         flex: 1, 
-        alignItems: 'flex-start', 
+        alignItems: 'center', 
         justifyContent: 'center'
     },
     backButtonLabel: {
         color: "white", 
         fontSize: 12,
+    },
+    innerButtonView: {
+        alignItems: 'center', 
+        justifyContent: 'center'
     },
     backDeleteButton: {
         backgroundColor: 'red',        

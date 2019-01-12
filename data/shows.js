@@ -4,6 +4,7 @@ import manuh from 'manuh'
 import topics from '../config/topics'
 import { DB_SHOWS } from '../config/variables'
 import { reportError } from '../utils/reporter'
+import { httpsURL } from '../utils/text'
 
 // new PouchDB(DB_SHOWS).destroy()
 const showData = {
@@ -37,13 +38,16 @@ const showData = {
             }
         }
     },
-    resolveShowInfo: async (url, callback) => {      
-        const currShow = await showData.get(url)        
+    resolveShowInfo: async (url, callback) => {   
+        const urlDownload = httpsURL(url)
+
+        const currShow = await showData.get(urlDownload)        
         if (currShow) {
             return callback(currShow)
         }
 
-        fetch(url)
+        fetch(urlDownload)
+        .catch(err => console.error(err))
         .then(response => response.text() )
         .then(responseData => rssParser.parse(responseData))
         .then( async (rss, err) => {
@@ -51,17 +55,17 @@ const showData = {
                 return callback(null, err)
             }            
             
-            const rssURL = rss.links.length > 0 ? rss.links[0].url : null
+            const rssURL = rss.links.length > 0 ? httpsURL(rss.links[0].url) : null
             const normalizedResult = Object.assign(rss,{
-                _id: url,
-                url: url,
+                _id: urlDownload,
+                url: urlDownload,
                 showURL: rssURL,
                 title: rss.title,
                 description: rss.description,
                 language: rss.language,
                 copyright: rss.copyright,
                 lastUpdated: new Date(rss.items[0].published),
-                imageURL: rss.image ? rss.image.url : null,
+                imageURL: rss.image ? httpsURL(rss.image.url) : null,
                 authors: rss.itunes && rss.itunes.authors && rss.itunes.authors.length>0 ? rss.itunes.authors[0].name : null,
                 categories: rss.itunes.categories,
                 owner: rss.itunes.owner ? rss.itunes.owner : null

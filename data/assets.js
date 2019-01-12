@@ -7,10 +7,13 @@ import { reportError } from '../utils/reporter'
 
 import { DB_AUDIO_FILE_PATH } from '../config/variables'
 import t from '../locales';
+import { httpsURL } from '../utils/text'
 
 module.exports.storeAudio = async (url, callback) => {
 
     const downloadFile = (urlParam, callbackParam) => {                          
+
+        const urlDownload = httpsURL(urlParam)
 
         manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode')})
 
@@ -18,7 +21,7 @@ module.exports.storeAudio = async (url, callback) => {
             fileCache : true,
             appendExt : 'mp3'
         })
-        .fetch('GET', urlParam)
+        .fetch('GET', urlDownload)
 
         fetchProm.progress({ interval : 100 }, (received, total) => {
             manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode') + " \n " +Math.floor(received/total*100) + '%'})
@@ -28,7 +31,7 @@ module.exports.storeAudio = async (url, callback) => {
             const originalPath = res.path()
             const audioPath = "file://"+originalPath
             dbAudioFilePath.put({
-                "_id": urlParam,
+                "_id": urlDownload,
                 "audioPath": audioPath,
                 "originalPath": originalPath
             })

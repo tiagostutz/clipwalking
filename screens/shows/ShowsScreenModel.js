@@ -3,6 +3,7 @@ import manuh from 'manuh'
 import showData from '../../data/shows';
 import topics from '../../config/topics'
 import t from '../../locales'
+import { httpsURL } from '../../utils/text'
 
 export default class ShowsScreenModel extends RhelenaPresentationModel {
     constructor() {
@@ -16,8 +17,8 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
         })
     }
 
-    async addNewShow(rssURL) {        
-
+    async addNewShow(rssURLParam) {        
+        const rssURL = httpsURL(rssURLParam)
         const show = await showData.get(rssURL)
 
         if (!show) {
@@ -32,7 +33,9 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
         
     }
 
-    async showAlreadyAdded(rssURL) {
+    async showAlreadyAdded(rssURLParam) {
+        const rssURL = httpsURL(rssURLParam)
+        
         const show = await showData.get(rssURL)        
         return show
     }

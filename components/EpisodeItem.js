@@ -59,10 +59,17 @@ export default class EpisodeItem extends Component {
     onShowSummaryPress = () => console.log('=+++==>')
 
     closeSwipe() {
-        this.swipe.close()
+        if (this.swipe) {
+            this.swipe.close()
+        }
     }
     
     render() { 
+
+        if (!this.state.episode) return <View></View>
+
+        const episodeImage = this.state.episode.image ? this.state.episode.image : this.state.episode.showImage
+
         let rightButtons = []
         if(!this.props.disableAddLater) {
             rightButtons.push(<TouchableOpacity key={1} style={[styles.backButton, styles.backAddButton]} onPress={() => this.viewModel.moveEpisodeToWaitingList()}>
@@ -81,7 +88,7 @@ export default class EpisodeItem extends Component {
         </TouchableOpacity>)
 
         const rightButtonsView = (
-            <View style={{ width: 128, marginTop: 10, marginBottom: 10, flexDirection: 'row' }}>
+            <View style={{ width: 64*rightButtons.length, marginTop: 10, marginBottom: 10, flexDirection: 'row' }}>
                 { rightButtons }
             </View>
         )
@@ -91,7 +98,7 @@ export default class EpisodeItem extends Component {
                 <View style={styles.card}>
                     <TouchableHighlight onPress={this.onCardPress}>
                         <RkCard rkType='horizontal'>
-                            { this.state.episode.image && <CacheableImage rkCardImg source={{uri: this.state.episode.image.replace("http://","https://")}} permanent={false} /> }
+                            { episodeImage && <CacheableImage rkCardImg source={{uri: episodeImage.replace("http://","https://")}} permanent={false} /> }
                             <View rkCardContent  style={{flexDirection: "column", justifyContent: "space-between", flex: 1}}>
                                 <View>
                                     <View style={styles.showDate}>
@@ -138,7 +145,7 @@ const styles = RkStyleSheet.create(theme => ({
   
     backButton: {
         flex: 1, 
-        alignItems: 'flex-start', 
+        alignItems: 'center', 
         justifyContent: 'center'
     },
     backButtonLabel: {
@@ -146,7 +153,6 @@ const styles = RkStyleSheet.create(theme => ({
         fontSize: 12,
     },
     innerButtonView: {
-        width: 70, 
         alignItems: 'center', 
         justifyContent: 'center'
     },

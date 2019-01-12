@@ -23,3 +23,14 @@ module.exports.formatElapsed = (seconds) => {
         return `${new String(minutes).padStart(2, '0')}:${new String(remainingSeconds).padStart(2, '0')}`
     }
 }
+
+module.exports.httpsURL = (url) => {
+    if (url && !url.match("file:") && !url.match("https:")) {
+        if (url.match("http:")) {
+            return url.replace("http:", "https:")
+        }else{
+            return "https://"+url
+        }
+    }
+    return url
+}

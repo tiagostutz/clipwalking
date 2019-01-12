@@ -12,7 +12,8 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
 import SplashScreen from 'react-native-splash-screen'
-
+import manuh from 'manuh'
+import topics from '../../config/topics'
 
 import { listScreenStyle } from '../../config/styles'
 
@@ -24,42 +25,49 @@ import WaitingScreenModel from './WaitingScreenModel'
 
 export default class WaitingScreen extends React.Component {
 
-    static navigationOptions = {
-        title: t('waiting'),
-        tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}time`} color={tintColor} size={25}/>
-    }
+  static navigationOptions = {
+      title: t('waiting'),
+      tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}time`} color={tintColor} size={25}/>
+  }
 
-    componentWillMount() {
-        attachModelToView(new WaitingScreenModel(), this)
-    }
+  componentWillMount() {
+      attachModelToView(new WaitingScreenModel(), this)
+  }
 
-    componentWillUnmount() {
-      this.viewModel.clean()
-    }
-    
-    componentDidMount() {
-      SplashScreen.hide()    
-      setTimeout(()=>SplashScreen.hide(), 3000)
-    }
+  componentWillUnmount() {
+    manuh.unsubscribe(topics.episodes.swipe.opening.set, "WaitingScreen")
+    manuh.unsubscribe(topics.episodes.swipe.release.set, "WaitingScreen")
+    this.viewModel.clean()
+  }
   
+  componentDidMount() {
+    SplashScreen.hide()    
+    setTimeout(()=>SplashScreen.hide(), 3000)
+  }
 
-    render = () => (
-      <View style={listScreenStyle.screen}>
-        <View style={listScreenStyle.content}>
+  onScroll() {
+    manuh.publish(topics.episodes.list.scrolling.set, { value: 1 })
+  }
 
-          <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
-          { this.state.waitingData && this.state.waitingData.length > 0 && 
-            <FlatList
-              initialNumToRender={10}
-              data={this.state.waitingData}
-              renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
-              keyExtractor={(item) => `${item.id}`}
-              style={listScreenStyle.listContainer}
-            />
-          }
-        </View>
-        
-        
+
+  render = () => (
+    <View style={listScreenStyle.screen}>
+      <View style={listScreenStyle.content}>
+
+        <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
+        { this.state.waitingData && this.state.waitingData.length > 0 && 
+          <FlatList
+            onScrollBeginDrag={() => this.onScroll()}
+            initialNumToRender={10}
+            data={this.state.waitingData}
+            renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
+            keyExtractor={(item) => `${item.id}`}
+            style={listScreenStyle.listContainer}
+          />
+        }
       </View>
-    )
+      
+      
+    </View>
+  )
 }

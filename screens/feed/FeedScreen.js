@@ -26,18 +26,6 @@ export default class FeedScreen extends React.Component {
 
   constructor() {
     super()
-
-    this.state = { isSwiping:false }
-    manuh.subscribe(topics.episodes.swipe.opening.set, "FeedScreen", ({value}) => {
-      if (value === 1) {
-        this.setState({isSwiping: true})
-      }
-    })
-    manuh.subscribe(topics.episodes.swipe.release.set, "FeedScreen", ({value}) => {
-      if (value === 1) {
-        this.setState({isSwiping: false})
-      }
-    })
   }
 
   onScroll() {
@@ -53,6 +41,11 @@ export default class FeedScreen extends React.Component {
     attachModelToView(new FeedScreenModel(), this)
   }
 
+  componentWillUnmount() {
+    manuh.unsubscribe(topics.episodes.swipe.opening.set, "FeedScreen")
+    manuh.unsubscribe(topics.episodes.swipe.release.set, "FeedScreen")
+  }
+
   componentDidMount() {
     SplashScreen.hide()    
     setTimeout(()=>SplashScreen.hide(), 3000)
@@ -64,10 +57,8 @@ export default class FeedScreen extends React.Component {
         <RkText style={listScreenStyle.title} rkType='header0'>{t('feed')}</RkText>
         { this.state.feedData && this.state.feedData.length > 0 && 
           <FlatList
-            onMomentumScrollBegin={() => this.setState({isSwiping: false})}
             onScrollBeginDrag={() => this.onScroll()}
             initialNumToRender={10}
-            scrollEnabled={!this.state.isSwiping}
             data={this.state.feedData}
             renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
             keyExtractor={(item) => `${item.id}`}

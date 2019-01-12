@@ -1,4 +1,4 @@
-import { RhelenaPresentationModel } from 'rhelena';
+import { RhelenaPresentationModel, globalState } from 'rhelena';
 import manuh from 'manuh'
 import showData from '../../data/shows';
 import topics from '../../config/topics'
@@ -9,12 +9,22 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
     constructor() {
         super();
         this.shows = []
-
-        showData.getAll(result => this.shows = result)        
-
+        this.playerActive = globalState.playerOpened
+        
+        manuh.subscribe(topics.episodes.list.select.set, "ShowsScreenModel", _ => {
+            this.playerActive = true
+        })
+        
         manuh.subscribe(topics.shows.list.remove.set, "ShowsScreenModel", () => {
             showData.getAll(result => this.shows = result)        
         })
+
+        showData.getAll(result => this.shows = result)        
+    }
+
+    clean() {
+        manuh.unsubscribe(topics.episodes.list.select.set, "ShowsScreenModel")
+        manuh.unsubscribe(topics.shows.list.remove.set, "ShowsScreenModel")
     }
 
     async addNewShow(rssURLParam) {        
@@ -35,7 +45,7 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
 
     async showAlreadyAdded(rssURLParam) {
         const rssURL = httpsURL(rssURLParam)
-        
+
         const show = await showData.get(rssURL)        
         return show
     }

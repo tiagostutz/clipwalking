@@ -50,24 +50,31 @@ export default class WaitingScreen extends React.Component {
   }
 
 
-  render = () => (
-    <View style={listScreenStyle.screen}>
-      <View style={listScreenStyle.content}>
+  render() {
+    let styleCompiled = [listScreenStyle.listContainer]
+    if (this.state.playerActive) {
+      styleCompiled.push(listScreenStyle.listContainerFloatPlayerVisible)
+    }
 
-        <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
-        { this.state.waitingData && this.state.waitingData.length > 0 && 
-          <FlatList
-            onScrollBeginDrag={() => this.onScroll()}
-            initialNumToRender={10}
-            data={this.state.waitingData}
-            renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
-            keyExtractor={(item) => `${item.id}`}
-            style={listScreenStyle.listContainer}
-          />
-        }
+    return (
+      <View style={listScreenStyle.screen}>
+        <View style={listScreenStyle.content}>
+
+          <RkText style={listScreenStyle.title} rkType='header0'>{t('waiting')}</RkText>
+          { this.state.waitingData && this.state.waitingData.length > 0 && 
+            <FlatList
+              onScrollBeginDrag={() => this.onScroll()}
+              initialNumToRender={10}
+              data={this.state.waitingData}
+              renderItem={({ item }) => <EpisodeItem episode={item} displayShowName disableAddLater />}
+              keyExtractor={(item) => `${item.id}`}
+              style={styleCompiled}
+            />
+          }
+        </View>
+        
+        
       </View>
-      
-      
-    </View>
-  )
+    )
+  }
 }

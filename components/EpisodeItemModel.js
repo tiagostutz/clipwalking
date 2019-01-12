@@ -1,4 +1,4 @@
-import { RhelenaPresentationModel } from 'rhelena';
+import { RhelenaPresentationModel, globalState } from 'rhelena';
 import manuh from 'manuh'
 import topics from '../config/topics'
 import feedService from '../data/feed';
@@ -10,6 +10,7 @@ export default class EpisodeItemModel extends RhelenaPresentationModel {
     }
 
     selectEpisode() {
+        globalState.playerOpened = true
         manuh.publish(topics.episodes.list.select.set, { episode: this.episode })
     }
 

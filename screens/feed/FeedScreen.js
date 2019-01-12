@@ -42,8 +42,7 @@ export default class FeedScreen extends React.Component {
   }
 
   componentWillUnmount() {
-    manuh.unsubscribe(topics.episodes.swipe.opening.set, "FeedScreen")
-    manuh.unsubscribe(topics.episodes.swipe.release.set, "FeedScreen")
+    this.viewModel.clean()
   }
 
   componentDidMount() {
@@ -51,22 +50,29 @@ export default class FeedScreen extends React.Component {
     setTimeout(()=>SplashScreen.hide(), 3000)
   }
 
-  render = () => (
-    <View style={listScreenStyle.screen}>
-      <View style={listScreenStyle.content}>
-        <RkText style={listScreenStyle.title} rkType='header0'>{t('feed')}</RkText>
-        { this.state.feedData && this.state.feedData.length > 0 && 
-          <FlatList
-            onScrollBeginDrag={() => this.onScroll()}
-            initialNumToRender={10}
-            data={this.state.feedData}
-            renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
-            keyExtractor={(item) => `${item.id}`}
-            style={listScreenStyle.listContainer}
-          />
-        } 
+  render() {
+    let styleCompiled = [listScreenStyle.listContainer]
+    if (this.state.playerActive) {
+      styleCompiled.push(listScreenStyle.listContainerFloatPlayerVisible)
+    }
+    
+    return (
+      <View style={listScreenStyle.screen}>
+        <View style={listScreenStyle.content}>
+          <RkText style={listScreenStyle.title} rkType='header0'>{t('feed')}</RkText>
+          { this.state.feedData && this.state.feedData.length > 0 && 
+            <FlatList
+              onScrollBeginDrag={() => this.onScroll()}
+              initialNumToRender={10}
+              data={this.state.feedData}
+              renderItem={({ item }) => <EpisodeItem episode={item} displayShowName />}
+              keyExtractor={(item) => `${item.id}`}
+              style={styleCompiled}
+            />
+          } 
+        </View>
+        
       </View>
-      
-    </View>
-  )
+    )
+  }
 }

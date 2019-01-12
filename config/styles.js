@@ -21,6 +21,10 @@ module.exports.listScreenStyle = RkStyleSheet.create(theme => ({
         backgroundColor: theme.colors.screen.scroll,
         marginBottom: 100
     },
+    listContainerFloatPlayerVisible: {
+        backgroundColor: theme.colors.screen.scroll,
+        marginBottom: 155
+    },
     title: {
         marginBottom: 12,
         marginTop: 8,

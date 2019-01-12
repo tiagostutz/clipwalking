@@ -62,6 +62,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
     clean() {
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
+        manuh.unsubscribe(topics.player.runtime.play.set, "PlayModel")
     }
 
     publishPlayerUpdate() {

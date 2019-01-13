@@ -6,3 +6,6 @@ module.exports.DB_ASSETS = "app_clip_walking_assets"
 module.exports.DB_AUDIO_FILE_PATH = "app_clip_walking_audio_file_path"
 module.exports.DB_CLIPS = "app_clip_walking_clips"
 module.exports.DB_SHOWS = "app_clip_walking_shows"
+module.exports.DB_APP_STATE = "app_clip_app_state"
+
+module.exports.LAST_OPENED_TRACK = "LAST_OPENED_TRACK"

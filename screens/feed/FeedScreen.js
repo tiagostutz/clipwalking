@@ -21,7 +21,6 @@ import t from '../../locales'
 import { ICON_PREFIX } from '../../config/variables'
 
 import FeedScreenModel from './FeedScreenModel'
-import SplashScreen from 'react-native-splash-screen'
 export default class FeedScreen extends React.Component {
 
   constructor() {
@@ -43,11 +42,6 @@ export default class FeedScreen extends React.Component {
 
   componentWillUnmount() {
     this.viewModel.clean()
-  }
-
-  componentDidMount() {
-    SplashScreen.hide()    
-    setTimeout(()=>SplashScreen.hide(), 3000)
   }
 
   render() {

@@ -10,6 +10,7 @@ import t from '../locales';
 import { httpsURL } from '../utils/text'
 
 module.exports.storeAudio = async (url, callback) => {
+    const urlNormalized = httpsURL(url)
 
     const downloadFile = (urlParam, callbackParam) => {                          
 
@@ -41,6 +42,7 @@ module.exports.storeAudio = async (url, callback) => {
         }).catch(err =>  {
             manuh.publish(topics.loader.activity.status.set, { value: 0 })
             reportError(err)
+            callbackParam(null. err)
         })
     }
     
@@ -52,17 +54,17 @@ module.exports.storeAudio = async (url, callback) => {
 
     try {
         
-        const audio = await dbAudioFilePath.get(url)
+        const audio = await dbAudioFilePath.get(urlNormalized)
         
         if(!await RNFetchBlob.fs.exists(audio.originalPath)) {
             await dbAudioFilePath.remove(audio)
-            downloadFile(url, callback)
+            downloadFile(urlNormalized, callback)
         }else{
             callback(audio)
         }
     } catch (error) {
         if (error.status === 404) {
-            downloadFile(url, callback)
+            downloadFile(urlNormalized, callback)
         }else{
             reportError(error)        
         }

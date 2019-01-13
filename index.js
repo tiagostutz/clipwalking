@@ -2,6 +2,7 @@
 import React from 'react'
 import {AppRegistry} from 'react-native';
 import manuh from 'manuh'
+
 import TrackPlayer, { STATE_PAUSED, STATE_STOPPED, STATE_BUFFERING, STATE_PLAYING } from 'react-native-track-player'
 
 import App from './App';
@@ -50,5 +51,5 @@ TrackPlayer.registerEventHandler(async event => {
             manuh.publish(topics.player.runtime.buffer.set, { trackId: await TrackPlayer.getCurrentTrack(), value: 0} )
         }
         
-    }, 100)
+    }, 150)
 })

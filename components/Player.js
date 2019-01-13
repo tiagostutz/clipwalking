@@ -70,12 +70,15 @@ export default class Player extends Component {
     }
     componentDidMount() {
         this.blinkOn()
+        this.viewModel.restoreLastPlayerState()
     }
     componentWillUnmount() {
         this.viewModel.clean()
     }
 
     render() {
+        if (!this.state.playerReady) return <View></View>
+        
         const iconPlay = !this.state.isPlaying ? `${ICON_PREFIX}play` : `${ICON_PREFIX}pause`
         const playIconAction = !this.state.isPlaying ? () => this.viewModel.play() : () => this.viewModel.pause()
         
@@ -85,6 +88,7 @@ export default class Player extends Component {
         const shareCutIconColor = this.state.currentClip ? Colors.foreground : Colors.disabled
 
         if (this.state.currentTrackInfo) {
+            const episodeImage = this.state.currentTrackInfo.image ? this.state.currentTrackInfo.image : this.state.currentTrackInfo.showImage
             if (this.state.isFloatingMode) {
                 playerComponent = (
                     this.state.currentTrackInfo &&                    
@@ -123,7 +127,7 @@ export default class Player extends Component {
                                 </View>
                             </TouchableWithoutFeedback>
                             <View>
-                                { this.state.currentTrackInfo.image && <CacheableImage style={playerStyles.maximized.cover} source={{uri: this.state.currentTrackInfo.image}} permanent={false} /> }
+                                { episodeImage && <CacheableImage style={playerStyles.maximized.cover} source={{uri: episodeImage}} permanent={false} /> }
                             </View>
                             <View style={playerStyles.maximized.trackInfo}>
                                 <TextTicker style={{ fontSize: 21 }}

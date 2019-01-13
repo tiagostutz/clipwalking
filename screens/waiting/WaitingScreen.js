@@ -11,7 +11,6 @@ import {
  
 import Icon from 'react-native-vector-icons/Ionicons'
 import { attachModelToView } from 'rhelena'
-import SplashScreen from 'react-native-splash-screen'
 import manuh from 'manuh'
 import topics from '../../config/topics'
 
@@ -40,11 +39,6 @@ export default class WaitingScreen extends React.Component {
     this.viewModel.clean()
   }
   
-  componentDidMount() {
-    SplashScreen.hide()    
-    setTimeout(()=>SplashScreen.hide(), 3000)
-  }
-
   onScroll() {
     manuh.publish(topics.episodes.list.scrolling.set, { value: 1 })
   }

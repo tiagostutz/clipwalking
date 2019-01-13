@@ -1,12 +1,15 @@
 import { RhelenaPresentationModel } from 'rhelena';
 import TrackPlayer from 'react-native-track-player';
 import manuh from 'manuh'
+import SplashScreen from 'react-native-splash-screen'
 
 import { NativeModules, Share } from 'react-native'
 
 import assetService from '../data/assets'
 import trackService from '../data/tracks'
 import clipService from '../data/clips'
+import appStateStore from '../data/appStateStore'
+
 import topics from '../config/topics'
 
 import { reportError } from '../utils/reporter'
@@ -26,11 +29,6 @@ export default class PlayerModel extends RhelenaPresentationModel {
         
         this.clipStartPosition = null        
         this.currentClip = null
-
-        // Initialize the player
-        TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
-            this.playerReady = true
-        });
 
         manuh.unsubscribe(topics.player.runtime.play.set, "PlayModel")
         manuh.subscribe(topics.player.runtime.play.set, "PlayModel", async msg => {
@@ -60,6 +58,28 @@ export default class PlayerModel extends RhelenaPresentationModel {
         })
     }
 
+    //restore the Player state from the previous interaction
+    restoreLastPlayerState() {
+        this.playerReady = false
+        appStateStore.getLastOpenedTrack(async state => {
+
+            // Initialize the player
+            TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
+                if (!state) return
+                               
+                this.isFloatingMode = state.isFloatingMode
+                await this.loadEpisode(state.episode)
+    
+                //force a pause
+                setTimeout(_ => { 
+                    manuh.publish(topics.player.runtime.play.set, { trackId: state.episode.id, value: 0} )
+                    this.playerReady = true
+                    SplashScreen.hide()    
+                }, 700)            
+            });
+        })
+    }
+
     clean() {
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.unsubscribe(topics.player.runtime.play.set, "PlayModel")
@@ -71,14 +91,20 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
     toggleMode() {
         this.isFloatingMode = !this.isFloatingMode
+        appStateStore.storePlayerState({isFloatingMode: this.isFloatingMode})
     }
     
-    async playEpisode(episode) {
+    async loadEpisode(episode) {
         this.currentTrackInfo = episode
                 
         return new Promise(async (resolve, reject) => {            
-            assetService.storeAudio(this.currentTrackInfo.url, async ({audioPath, originalPath}) => {  
-                
+            assetService.storeAudio(this.currentTrackInfo.url, async (result, err) => {  
+                if (err) {
+                    reportError(err)
+                    return reject(err)
+                }
+                const { audioPath, originalPath } = result
+
                 this.currentTrackInfo.audioPath = audioPath  
                 this.currentTrackInfo.originalPath = originalPath                
                 const trackToPlay = {
@@ -91,53 +117,50 @@ export default class PlayerModel extends RhelenaPresentationModel {
                     "description": this.currentTrackInfo.description
                 }
                 
-                resolve(await this.play([trackToPlay]))
+                let doc = await trackService.get(trackToPlay.id)            
+                if (!doc) {
+                    doc = {
+                        "_id": trackToPlay.id,
+                        "position": 0
+                    }
+                    await trackService.put(doc)
+                }
+                                    
+                await TrackPlayer.add([trackToPlay])
+                await TrackPlayer.play()
+                await TrackPlayer.pause()
+                await TrackPlayer.seekTo(doc.position) //resume from where it stopped
+                this.publishPlayerUpdate()                
+                resolve(trackToPlay)                
             })
             // notify that the buffer has started
             manuh.publish(topics.player.runtime.buffer.set, { value: 1, trackId: episode.id})
         })
     }
 
-    async play(trackList) {
-        try {
-            const playAndPublish = () => {
-                this.publishPlayerUpdate()
-                return TrackPlayer.play()
+    async playEpisode(episode) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                
+                const loadedEpisode = await this.loadEpisode(episode)
+                resolve(await this.play([loadedEpisode]))
+            } catch (error) {
+                reportError(error)
+                reject(error)
             }
-    
-            if (!this.playerReady) {
-                reportError("The player is not ready yet and hence cannot be used")            
-                return
-            }
-    
-            if (!trackList && !this.currentTrackInfo) {
-                reportError("The `trackList` param cannot be empty. Please spicify a track to be played.")            
-                return
-            }else if(!trackList && this.currentTrackInfo){ //if it is just a "resume"
-                return playAndPublish()
-            }
-            
-            // before changing the track, pause the current track persisting the last position
-            await this.pause()        
-            // clear TrackPlayer queue
-            await TrackPlayer.reset()
-            // Adds tracks to the queue
-            await TrackPlayer.add(trackList)
-            
-            let doc = await trackService.get(trackList[0].id)            
-            if (!doc) {
-                doc = await trackService.put({
-                    "_id": trackList[0].id,
-                    "position": 0
-                })
-            }
-            await playAndPublish()
-            
-            TrackPlayer.seekTo(doc.position) //resume from where it stopped
-            
-        } catch (error) {
-            reportError(error);                    
+        })
+    }
+
+    async play(loadedEpisode) {
+        if (!loadedEpisode && !this.currentTrackInfo) {
+            return reportError("The `loadedEpisode` param cannot be empty. Please spicify a track to be played.")            
         }
+        if (!this.playerReady) {
+            return reportError("The player is not ready yet and hence cannot be used")            
+        }
+
+        this.publishPlayerUpdate()
+        return TrackPlayer.play()         
     }
 
     async pause() {

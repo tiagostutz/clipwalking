@@ -8,7 +8,6 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons'
-import SplashScreen from 'react-native-splash-screen'
 import { attachModelToView, globalState } from 'rhelena'
 import {
   RkText
@@ -55,11 +54,6 @@ export default class ShowsScreen extends React.Component {
 
   componentWillUnmount() {
     this.viewModel.clean()
-  }
-
-  componentDidMount() {
-    SplashScreen.hide()    
-    setTimeout(()=>SplashScreen.hide(), 3000)
   }
 
   handleAddPress = async() => {

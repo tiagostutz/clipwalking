@@ -5,8 +5,10 @@ import WaitingScreen from './screens/waiting/WaitingScreen'
 import ClipsScreen from './screens/clips/ClipsScreen';
 import { bootstrap } from './config/bootstrap';
 import { Colors } from './config/theme'
+import appStateStore from './data/appStateStore'
 
 bootstrap();
+appStateStore.startSync()
 
 const TabNavigator = createBottomTabNavigator({
   Feed: FeedScreen,

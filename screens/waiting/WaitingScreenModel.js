@@ -3,6 +3,7 @@ import manuh from 'manuh'
 
 import feedService from '../../data/feed';
 import topics from '../../config/topics'
+import appStateStore from '../../data/appStateStore'
 
 
 export default class WaitingScreenModel extends RhelenaPresentationModel {
@@ -31,6 +32,13 @@ export default class WaitingScreenModel extends RhelenaPresentationModel {
             }
             this.waitingData = result
         })
+
+        appStateStore.getLastOpenedTrack(async state => {
+            if (state) {
+                this.playerActive = true
+            }
+        })
+
     }
     
     clean() {

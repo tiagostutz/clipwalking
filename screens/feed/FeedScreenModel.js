@@ -2,6 +2,7 @@ import { RhelenaPresentationModel, globalState } from 'rhelena';
 import feedData from '../../data/feed';
 import manuh from 'manuh'
 import topics from '../../config/topics'
+import appStateStore from '../../data/appStateStore'
 
 export default class FeedScreenModel extends RhelenaPresentationModel {
     constructor() {
@@ -34,6 +35,12 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
         manuh.subscribe(topics.shows.episodes.loaded.set, "FeedScreenModel", ({value, showRSS}) => {
             if (value === 1) {
                 this.updateFeed()
+            }
+        })
+
+        appStateStore.getLastOpenedTrack(async state => {
+            if (state) {
+                this.playerActive = true
             }
         })
 

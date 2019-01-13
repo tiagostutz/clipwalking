@@ -4,6 +4,7 @@ import showData from '../../data/shows';
 import topics from '../../config/topics'
 import t from '../../locales'
 import { httpsURL } from '../../utils/text'
+import appStateStore from '../../data/appStateStore'
 
 export default class ShowsScreenModel extends RhelenaPresentationModel {
     constructor() {
@@ -19,7 +20,14 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
             showData.getAll(result => this.shows = result)        
         })
 
-        showData.getAll(result => this.shows = result)        
+        showData.getAll(result => this.shows = result)    
+        
+        appStateStore.getLastOpenedTrack(async state => {
+            if (state) {
+                this.playerActive = true
+            }
+        })
+
     }
 
     clean() {

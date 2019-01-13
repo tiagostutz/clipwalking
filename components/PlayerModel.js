@@ -38,7 +38,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
         // listen for current track changed event
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
-
+            
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
             if (this.currentTrackInfo && this.currentTrackInfo.id === msg.episode.id) {
                 try {                                 
@@ -65,7 +65,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
 
             // Initialize the player
             TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
-                if (!state) return
+                if (!state) {
+                    this.playerReady = true
+                    return SplashScreen.hide()
+                }
                                
                 this.isFloatingMode = state.isFloatingMode
                 await this.loadEpisode(state.episode)
@@ -96,8 +99,9 @@ export default class PlayerModel extends RhelenaPresentationModel {
     
     async loadEpisode(episode) {
         this.currentTrackInfo = episode
-                
+            
         return new Promise(async (resolve, reject) => {            
+            console.log('=====+++===>>>', this.currentTrackInfo.url)
             assetService.storeAudio(this.currentTrackInfo.url, async (result, err) => {  
                 if (err) {
                     reportError(err)
@@ -125,7 +129,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                     }
                     await trackService.put(doc)
                 }
-                                    
+                await TrackPlayer.reset()                    
                 await TrackPlayer.add([trackToPlay])
                 await TrackPlayer.play()
                 await TrackPlayer.pause()
@@ -139,11 +143,11 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async playEpisode(episode) {
+        this.pause()
         return new Promise(async (resolve, reject) => {
             try {
-                
-                const loadedEpisode = await this.loadEpisode(episode)
-                resolve(await this.play([loadedEpisode]))
+                await this.loadEpisode(episode)
+                resolve(await this.play())
             } catch (error) {
                 reportError(error)
                 reject(error)

@@ -12,8 +12,6 @@ const storePlayerState = (playerState) => {
     
     db.get(LAST_OPENED_TRACK).then(doc => {        
         doc = Object.assign(doc, playerState)
-        console.log('+++>---->>>', JSON.stringify(playerState));
-        console.log('+++===|||>>', JSON.stringify(doc));
         db.put(doc)
       }).catch((err) => {          
           if (err.status === 404) {

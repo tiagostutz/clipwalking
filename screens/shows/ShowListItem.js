@@ -46,12 +46,6 @@ export default class ShowListItem extends Component {
     componentWillUnmount() {
         manuh.unsubscribe(topics.shows.list.scrolling.set, this.props.show.id)
     }
-
-    onCardPress() {         
-        if (!this.isRowOpened)  {
-            this.viewModel.selectShow()
-        } 
-    }
     
     closeSwipe() {
         if (this.swipe) {
@@ -86,7 +80,7 @@ export default class ShowListItem extends Component {
                         <TouchableHighlight
                             delayPressIn={70}
                             activeOpacity={0.8}
-                            onPress={() => this.onCardPress()}
+                            onPress={() => { this.viewModel.selectShow(); this.props.onPress() }}
                         >
                             <RkCard style={{borderWidth: 4, borderColor: Colors.background,
                                 shadowColor: "#000",

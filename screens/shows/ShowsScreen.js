@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/Ionicons'
-import { attachModelToView, globalState } from 'rhelena'
+import { attachModelToView } from 'rhelena'
 import {
   RkText
 } from 'react-native-ui-kitten';
@@ -26,6 +26,9 @@ import ShowListItem from './ShowListItem';
 
 export default class ShowsScreen extends React.Component {
   
+  static navigationOptions = {
+    header: null,
+  }
 
   constructor() {
     super()
@@ -41,11 +44,6 @@ export default class ShowsScreen extends React.Component {
         this.setState({isSwiping: false})
       }
     })
-  }
-
-  static navigationOptions = {
-    title: t('shows'),
-    tabBarIcon: ({tintColor}) => <Icon name={`${ICON_PREFIX}albums`} color={tintColor} size={25}/>
   }
 
   componentWillMount() {
@@ -116,7 +114,7 @@ export default class ShowsScreen extends React.Component {
               scrollEnabled={!this.state.isSwiping}
               initialNumToRender={10}
               data={this.state.shows}
-              renderItem={({ item }) => <ShowListItem show={item} />}
+              renderItem={({ item }) => <ShowListItem show={item} onPress={() => this.props.navigation.navigate('ShowEpisodes')} />}
               keyExtractor={(item) => `${item.id}`}
               style={styleCompiled}
             />

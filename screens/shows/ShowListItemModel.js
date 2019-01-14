@@ -1,4 +1,4 @@
-import { RhelenaPresentationModel } from 'rhelena';
+import { RhelenaPresentationModel, globalState } from 'rhelena';
 import manuh from 'manuh'
 import showData from '../../data/shows'
 import topics from '../../config/topics'
@@ -11,7 +11,7 @@ export default class ShowListItemModel extends RhelenaPresentationModel {
     }
 
     selectShow() {
-        console.log('+++++=== SELECT SHOW');        
+        globalState.currenShow = this.show
     }
 
     async removeShow() {        

@@ -23,6 +23,8 @@ DerivedData
 *.xcuserstate
 project.xcworkspace
 *.bundle*
+*.bundle
+*.map
 # Android/IntelliJ
 #
 build/

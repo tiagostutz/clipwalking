@@ -279,19 +279,23 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
 
     async shareClip() {
+        await this.pause()
         if (!this.currentClip) {
             return
         }
-        await Share.share({
+        const shareResult = await Share.share({
             url: this.lastAudioClipFilePath,
             title: this.currentTrackInfo.title
         }, {
             // Android only:
             dialogTitle: this.currentTrackInfo.title,
         })
-        this.resetClipper()
-        await this.playEpisode(this.currentTrackInfo)
-        this.pause()
+        
+        if (shareResult.action === "sharedAction") {
+            this.resetClipper()
+            await this.loadEpisode(this.currentTrackInfo)
+            this.play()
+        }
     }
 
     publishIsWorking(value) {

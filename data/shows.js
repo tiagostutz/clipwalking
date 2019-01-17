@@ -20,7 +20,7 @@ const showData = {
             if (error.status === 404) {
                 return null
             }else{
-                reportError(error)                
+                reportError("[dbShows][allDocs]"+ error)                
             }
         }
     },
@@ -34,7 +34,7 @@ const showData = {
             if (error.status === 404) {
                 return null
             }else{
-                reportError(error)                
+                reportError("[dbShows][get]:: " + error)                
             }
         }
     },
@@ -47,7 +47,7 @@ const showData = {
         }
 
         fetch(urlDownload)
-        .catch(err => reportError(err))
+        .catch(err => reportError("[resolveShowInfo][catch-promise]:: "+ err))
         .then(response => response.text() )
         .then(responseData => rssParser.parse(responseData))
         .then( async (rss, err) => {
@@ -70,9 +70,14 @@ const showData = {
                 categories: rss.itunes.categories,
                 owner: rss.itunes.owner ? rss.itunes.owner : null
             })
-            await showData.put(normalizedResult) //save the show info to local database
-            manuh.publish(topics.shows.new.created.set, { value: 1, showRSS: normalizedResult }) //notify the world of the show creation
-            return callback(normalizedResult, rss)
+            try {
+                await showData.put(normalizedResult) //save the show info to local database
+                manuh.publish(topics.shows.new.created.set, { value: 1, showRSS: normalizedResult }) //notify the world of the show creation
+                return callback(normalizedResult, rss)                
+            } catch (error) {
+                reportError("[showData][put]:: " + error)
+                callback(null, null, error)
+            }
         });
 
     },
@@ -83,19 +88,18 @@ const showData = {
             const res = await dbShows.put(show)    
             return res
         } catch (error) {
-            reportError(error)       
+            reportError("[dbShows][put]:: " + error)       
             return null         
         }
     },
 
     delete: async(show) => {
         const dbShows = new PouchDB(DB_SHOWS)
-        try {
+        try {            
             const res = await dbShows.remove(show) 
-            manuh.publish(topics.shows.selected.deleted.set, { value: 1, showRSS: show }) //notify the world of the show creation   
             return res
         } catch (error) {
-            reportError(error)       
+            reportError("[dbShows][delete]:: " + error)       
             return null         
         }
     }

@@ -10,14 +10,18 @@ const storePlayerState = (playerState) => {
     
     const db = new PouchDB(DB_APP_STATE)
     
-    db.get(LAST_OPENED_TRACK).then(doc => {        
+    db.get(LAST_OPENED_TRACK).then(async doc => {        
         doc = Object.assign(doc, playerState)
-        db.put(doc)
+        try {            
+            await db.put(doc)
+        } catch (error) {
+            reportError("[storePlayerState][put][update]:: " + err);
+        }
       }).catch((err) => {          
           if (err.status === 404) {
               
             db.put(Object.assign({_id: LAST_OPENED_TRACK}, playerState)).catch(function (err) {
-                reportError(err);
+                reportError("[storePlayerState][put][new]:: " + err);
             })
 
           }else{
@@ -45,6 +49,7 @@ module.exports.startSync = () => {
     manuh.subscribe(topics.episodes.list.select.set, "AppStateStore", async msg => {
         storePlayerState(msg)
     })
+    manuh.publish(topics.bootstrap.app.ready.set, { value: 1, module: "appStateStore" })
 }
 
 module.exports.getLastOpenedTrack = getLastOpenedTrack

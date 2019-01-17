@@ -43,7 +43,7 @@ const clipService = {
             await dbClips.put(track)    
             return track
         } catch (error) {
-            reportError(error)       
+            reportError("[dbClips][put]:: " + error)       
             return null         
         }
     }

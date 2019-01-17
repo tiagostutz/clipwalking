@@ -41,8 +41,8 @@ module.exports.storeAudio = async (url, callback) => {
             callbackParam({audioPath, originalPath})
         }).catch(err =>  {
             manuh.publish(topics.loader.activity.status.set, { value: 0 })
-            reportError(err)
-            callbackParam(null. err)
+            reportError("[dbAudioFilePath][put]:: " + err)
+            callbackParam(null, err)
         })
     }
     

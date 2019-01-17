@@ -37,16 +37,18 @@ export default class ShowsScreenModel extends RhelenaPresentationModel {
 
     async addNewShow(rssURLParam) {        
         const rssURL = httpsURL(rssURLParam)
+        manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('fetching show info')})
         const show = await showData.get(rssURL)
 
         if (!show) {
-            manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('fetching show info')})
             showData.resolveShowInfo(rssURL, async result => { //fetch the remote rss feed info
                 showData.getAll(resultRefreshed => {  //refresh the show list
                     this.shows = resultRefreshed
                     manuh.publish(topics.loader.activity.status.set, { value: 0 })
                  })
             })
+        }else{
+            manuh.publish(topics.loader.activity.status.set, { value: 0 })
         }
         
     }

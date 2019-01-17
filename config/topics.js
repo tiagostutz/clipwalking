@@ -89,6 +89,13 @@ let topics = {
                 set: null
             }
         }
+    },
+    bootstrap: {
+        app: {
+            ready: {
+                set: null
+            }
+        }
     }
 }
 topics = charol(topics)

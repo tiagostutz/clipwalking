@@ -4,7 +4,6 @@ import { attachModelToView } from 'rhelena'
 import { Modal, View, ActivityIndicator} from 'react-native'
 import { RkText } from 'react-native-ui-kitten'
 
-import t from '../locales'
 
 import LoadingModel from './LoadingModel'
 

@@ -7,6 +7,7 @@ import {
   } from 'react-native';
 
 import { listScreenStyle } from '../../config/styles'
+import { ActivityIndicator} from 'react-native'
   
 import ShowEpisodesModel from './ShowEpisodesModel'
 
@@ -35,7 +36,9 @@ export default class ShowEpisodes extends Component {
       
               <View style={listScreenStyle.content}>
                 <RkText style={listScreenStyle.title} rkType='header0'>{this.state.show.title}</RkText>
-                { this.state.episodes && this.state.episodes.length > 0 && 
+
+                { this.state.loading && <View><ActivityIndicator /></View>}
+                { !this.state.loading && this.state.episodes && this.state.episodes.length > 0 && 
                     <FlatList
                         onScrollBeginDrag={() => this.onScroll()}
                         initialNumToRender={10}

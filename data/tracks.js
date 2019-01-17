@@ -12,7 +12,7 @@ module.exports = {
             if (error.status === 404) {
                 return null
             }else{
-                reportError(error)                
+                reportError("[dbTrackPosition][get]" + error)                
             }
         }
     },
@@ -23,7 +23,7 @@ module.exports = {
             await dbTrackPosition.put(track)    
             return track
         } catch (error) {
-            reportError(error)    
+            reportError("[dbTrackPosition][put]:: " + error)    
             return null            
         }
     }

@@ -1,7 +1,6 @@
 import { RhelenaPresentationModel } from 'rhelena';
 import TrackPlayer from 'react-native-track-player';
 import manuh from 'manuh'
-import SplashScreen from 'react-native-splash-screen'
 
 import { NativeModules, Share } from 'react-native'
 
@@ -67,7 +66,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
             TrackPlayer.setupPlayer({playBuffer: 60}).then(async () => {
                 if (!state) {
                     this.playerReady = true
-                    return SplashScreen.hide()
+                    return manuh.publish(topics.bootstrap.app.ready.set, { value: 1, module: "player" })
                 }
                                
                 this.isFloatingMode = state.isFloatingMode
@@ -77,7 +76,7 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 setTimeout(_ => { 
                     manuh.publish(topics.player.runtime.play.set, { trackId: state.episode.id, value: 0} )
                     this.playerReady = true
-                    SplashScreen.hide()    
+                    manuh.publish(topics.bootstrap.app.ready.set, { value: 1, module: "player" })    
                 }, 700)            
             });
         })

@@ -1,4 +1,4 @@
-import { RhelenaPresentationModel } from 'rhelena';
+import { RhelenaPresentationModel, globalState } from 'rhelena';
 import manuh from 'manuh'
 import topics from '../config/topics'
 
@@ -8,9 +8,16 @@ export default class LoadingModel extends RhelenaPresentationModel {
         this.isWorking = false
         this.text = null
 
-        manuh.subscribe(topics.loader.activity.status.set, "LoadingModel", msg => { 
-            this.isWorking = msg.value == 1
-            this.text = msg.text
+        manuh.subscribe(topics.loader.activity.status.set, "LoadingModel", msg => {       
+            globalState.isWorking = msg.value
+            setTimeout(() => {
+                if (globalState.isWorking === 1) {
+                    this.isWorking = true
+                    this.text = msg.text  
+                }else{
+                    this.isWorking = false
+                }
+            }, 200)            
         })
     }
 

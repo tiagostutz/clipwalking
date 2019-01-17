@@ -10,13 +10,8 @@ PouchDB.plugin(find)
 
 // new PouchDB(DB_FEED_FULL).destroy()
 
-new PouchDB(DB_FEED_FULL).createIndex({
-    index: {fields: ['showURL']}
-}).catch(error => {
-    reportError(error)    
-})
+const feedData = {    
 
-const feedData = {
     fetch: (url) => {
         const urlDownload = httpsURL(url)
 
@@ -37,11 +32,12 @@ const feedData = {
 
     loadShowFeedItems: async (showFeed)  => {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
-        const normalizedResult = showFeed.items.map(rssItem => feedData.prepareFeedItem(showFeed, rssItem))
-        
         try {
+            // await feedData.deleteShowFeedItems(showFeed) // first, remove previous trash
+            const normalizedResult = showFeed.items.map(rssItem => feedData.prepareFeedItem(showFeed, rssItem))
+            
             await dbFeedFull.bulkDocs(normalizedResult)
-            manuh.publish(topics.shows.episodes.loaded.set, { value: 1, show: showFeed})
+            setTimeout(() => manuh.publish(topics.shows.episodes.loaded.set, { value: 1, show: showFeed}), 300)            
             return true
 
         } catch (error) {
@@ -51,15 +47,12 @@ const feedData = {
     },
 
     deleteShowFeedItems: async (showFeed)  => {
+                
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
         try {            
-            const feeds = await dbFeedFull.find({
-                selector: {
-                    showURL: { $eq: showFeed.url }
-                }
-            })
-
-            const deleteBulk = feeds.docs.map(f => { 
+            const aux = await dbFeedFull.allDocs({include_docs: true})
+            const feeds = aux.rows.map(e => e.doc).filter(d => d.showURL === showFeed.url)            
+            const deleteBulk = feeds.map(f => {                 
                 return {
                     _id: f._id,
                     _rev: f._rev,
@@ -69,11 +62,12 @@ const feedData = {
             
             await dbFeedFull.bulkDocs(deleteBulk)
 
-            manuh.publish(topics.shows.episodes.deleted.set, { value: 1, show: showFeed })
+            manuh.publish(topics.shows.episodes.deleted.set, { value: 1, show: showFeed })            
             
         } catch (error) {
-            reportError(error)
+            reportError("[dbFeedFull][deleteShowFeedItems]" + error)
         }
+
     },
 
     prepareFeedItem: (feed, rssItem) => {        
@@ -188,7 +182,7 @@ const feedData = {
                 await dbFeedWaiting.put(waitingRef) //add the item to removed database an return
                 return waitingRef
             }else{
-                reportError(error)
+                reportError("[dbFeedWaiting][put]:: " + error)
             }
         }
     },

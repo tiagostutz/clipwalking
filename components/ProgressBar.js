@@ -9,7 +9,6 @@ import Slider from "react-native-slider";
 import { ProgressComponent } from 'react-native-track-player'
 import ProgressMarModel from './ProgressBarModel';
 
-import t from '../locales'
 import { Colors } from '../config/theme';
 
 export default class ProgressBar extends ProgressComponent {

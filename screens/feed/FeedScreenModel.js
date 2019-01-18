@@ -11,8 +11,8 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
         this.feedData = []
         this.playerActive = globalState.playerOpened
 
-        manuh.subscribe(topics.episodes.list.select.set, "FeedScreenModel", _ => {
-            this.playerActive = true
+        manuh.subscribe(topics.episodes.list.select.set, "FeedScreenModel", msg => {
+            this.playerActive = !!msg.episode
         })
 
         manuh.subscribe(topics.shows.new.created.set, "FeedScreenModel", async ({value, showRSS}) => {
@@ -69,7 +69,7 @@ export default class FeedScreenModel extends RhelenaPresentationModel {
                 manuh.publish(topics.loader.activity.status.set, { value: 0 })
                 return reportError(err)                
             }
-            this.feedData = result
+            this.feedData = result            
             manuh.publish(topics.loader.activity.status.set, { value: 0 })
         })
 

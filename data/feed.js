@@ -2,7 +2,9 @@ import rssParser from 'react-native-rss-parser';
 import PouchDB from 'pouchdb-react-native'
 import find from 'pouchdb-find'
 import manuh from 'manuh'
-import { DB_FEED_FULL, DB_FEED_WAITING } from '../config/variables'
+
+import tracksService from './tracks';
+import { DB_FEED_FULL, DB_FEED_WAITING, DB_TRACK_POSITION } from '../config/variables'
 import topics from '../config/topics'
 import { httpsURL } from '../utils/text'
 import { reportError } from '../utils/reporter'
@@ -28,6 +30,20 @@ const feedData = {
             return true
         })
 
+    },
+
+    get: async(id) => {
+        const dbFeedFull = new PouchDB(DB_FEED_FULL)
+        try {
+            const doc = await dbFeedFull.get(id)   
+            return doc
+        } catch (error) {
+            if (error.status === 404) {
+                return null
+            }else{
+                reportError("[dbFeedFull][get]" + error)                
+            }
+        }
     },
 
     loadShowFeedItems: async (showFeed)  => {
@@ -118,22 +134,38 @@ const feedData = {
         try {
             const dbFeedFull = new PouchDB(DB_FEED_FULL)
             const dbFeedWaiting = new PouchDB(DB_FEED_WAITING)
+            const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
     
             // retrieve the last fetched feed items
             const feedDocsResp = await dbFeedFull.allDocs({"include_docs": true})        
             const waitingFeedsResp = await dbFeedWaiting.allDocs()
+            const playingTracksResp = await dbTrackPosition.allDocs()
             
             let waitingFeeds = waitingFeedsResp.total_rows===0 ? [] : waitingFeedsResp.rows.map(i => i.id)
+            let playingTracks = playingTracksResp.total_rows===0 ? [] : playingTracksResp.rows.map(i => i.id)
             
             if (feedDocsResp.total_rows === 0) {
                 return callback([])
             }else{
                 
-                // remove from the result the items that are present on other lists (removed or waiting)
+                // remove from the result the items that are present on other lists (playing or waiting)
+                // const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1 && playingTracks.indexOf(doc.id) == -1)
                 const filteredFeed = feedDocsResp.rows.map(f => f.doc).filter(doc => waitingFeeds.indexOf(doc.id) == -1)
                 
                 filteredFeed.forEach(f => f.image = httpsURL(f.image))
-                return callback(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit))
+                
+                // put playing tracks upfront
+                let playingEpisodes = []
+                // let playingTracksRefs = await tracksService.getAll()
+                // for (let i = 0; i < playingTracksRefs.length; i++) {
+                //     const t = playingTracksRefs[i]
+                //     const track = await feedData.get(t.id)
+                //     if (track) {
+                //         playingEpisodes.push(track)
+                //     }    
+                // }    
+
+                return callback(playingEpisodes.concat(filteredFeed.filter(f => !f["_id"].match("_design")).sort((a,b) => new Date(b.published)-new Date(a.published)).splice(skip, limit)))
             }
             
         } catch (error) {

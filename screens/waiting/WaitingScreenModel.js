@@ -1,10 +1,11 @@
 import { RhelenaPresentationModel, globalState } from 'rhelena';
 import manuh from 'manuh'
 
-import feedService from '../../data/feed';
+import feedService from '../../data/feed'
 import topics from '../../config/topics'
 import appStateStore from '../../data/appStateStore'
 
+import t from '../../locales'
 
 export default class WaitingScreenModel extends RhelenaPresentationModel {
     constructor() {
@@ -26,11 +27,14 @@ export default class WaitingScreenModel extends RhelenaPresentationModel {
             feedService.removeFromWaiting(msg.episode.id)
         })
 
-        feedService.getWaitingList((result, err) => {
+        manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('loading')})
+        feedService.getWaitingList(async (result, err) => {
             if (err) {
                 return reportError(err);                
-            }
+            }              
+                
             this.waitingData = result
+            manuh.publish(topics.loader.activity.status.set, { value: 0 })
         })
 
         appStateStore.getLastOpenedTrack(async state => {

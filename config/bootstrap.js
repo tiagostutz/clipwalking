@@ -172,6 +172,16 @@ import {
       },
     });
   
+    RkTheme.setType('RkButton', 'cancel', {
+      borderRadius: 3,
+      borderWidth: 0,
+      backgroundColor: theme => theme.colors.button.cancel,
+      container: {
+        flexDirection: 'column',
+        margin: 8,
+      }
+    });
+  
     RkTheme.setType('RkButton', 'square', {
       borderRadius: 3,
       backgroundColor: theme => theme.colors.button.back,

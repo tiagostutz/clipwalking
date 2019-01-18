@@ -3,6 +3,7 @@ export default {
     "add a show": "Adicionar um programa",
     "adding": "Adicionando",
     "available at": "Disponível em",
+    "cancel" : "cancelar",
     "clips": "Clips",
     "clipping": "recortando",
     "confirm": "Confirma",

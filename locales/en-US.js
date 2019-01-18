@@ -3,6 +3,7 @@ export default {
     "add a show": "Add a show",
     "adding": "Adding",
     "available at":"Available at",
+    "cancel" : "cancel",
     "clips": "Clips",
     "clipping": "clipping",
     "confirm":"Confirm",

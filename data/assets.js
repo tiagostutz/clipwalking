@@ -1,3 +1,4 @@
+import { globalState } from 'rhelena'
 import RNFetchBlob from 'react-native-fetch-blob'
 import PouchDB from 'pouchdb-react-native'
 
@@ -16,19 +17,16 @@ module.exports.storeAudio = async (url, callback) => {
 
         const urlDownload = httpsURL(urlParam)
 
-        manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode')})
+        manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode') })
 
-        let fetchProm = RNFetchBlob.config({
+        globalState["fetchProm"] = RNFetchBlob.config({
             fileCache : true,
             appendExt : 'mp3'
-        })
-        .fetch('GET', urlDownload)
+        }).fetch('GET', urlDownload)
 
-        fetchProm.progress({ interval : 100 }, (received, total) => {
-            manuh.publish(topics.loader.activity.status.set, { value: 1, text: t('downloading episode') + " \n " +Math.floor(received/total*100) + '%'})
-        })
-
-        fetchProm.then(res => {          
+        globalState["fetchProm"].progress({ interval : 100 }, (received, total) => {
+            manuh.publish(topics.loader.activity.status.set, { value: 1, cancelHandler: "fetchProm", text: t('downloading episode') + " \n " +Math.floor(received/total*100) + '%'})
+        }).then(res => {          
             const originalPath = res.path()
             const audioPath = "file://"+originalPath
             dbAudioFilePath.put({
@@ -40,8 +38,10 @@ module.exports.storeAudio = async (url, callback) => {
             manuh.publish(topics.loader.activity.status.set, { value: 0 })
             callbackParam({audioPath, originalPath})
         }).catch(err =>  {
-            manuh.publish(topics.loader.activity.status.set, { value: 0 })
-            reportError("[dbAudioFilePath][put]:: " + err)
+            manuh.publish(topics.loader.activity.status.set, { value: 0 })            
+            if (err && err.toString && err.toString().indexOf("cancelled") == -1) {
+                reportError("[dbAudioFilePath][put]:: " + err)
+            }
             callbackParam(null, err)
         })
     }
@@ -58,15 +58,40 @@ module.exports.storeAudio = async (url, callback) => {
         
         if(!await RNFetchBlob.fs.exists(audio.originalPath)) {
             await dbAudioFilePath.remove(audio)
-            downloadFile(urlNormalized, callback)
+            return downloadFile(urlNormalized, callback)
         }else{
             callback(audio)
         }
     } catch (error) {
+        if (error.toString().indexOf("cancelled") !== -1) {
+            return
+        }
         if (error.status === 404) {
-            downloadFile(urlNormalized, callback)
+            return downloadFile(urlNormalized, callback)
         }else{
-            reportError(error)        
+            reportError("[assets][storeAudio]:: " + error)        
+        }
+    }
+}
+
+
+module.exports.getAudioFileByTrackURL = async (url) => {
+    const urlNormalized = httpsURL(url)
+    const dbAudioFilePath = new PouchDB(DB_AUDIO_FILE_PATH)    
+
+    try {        
+        const audio = await dbAudioFilePath.get(urlNormalized)
+        
+        if(!await RNFetchBlob.fs.exists(audio.originalPath)) {
+            return null
+        }else{
+            return audio
+        }
+    } catch (error) {
+        if (error.status === 404) {
+            return null
+        }else{
+            reportError("[assets][storeAudio]:: " + error)        
         }
     }
 }

@@ -17,6 +17,20 @@ module.exports = {
         }
     },
 
+    getAll: async() => {
+        const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
+        try {
+            const docs = await dbTrackPosition.allDocs()   
+            if (docs.total_rows === 0) {
+                return []
+            }
+            return docs.rows
+
+        } catch (error) {
+            reportError("[dbTrackPosition][getAll]" + error)                
+        }
+    },
+
     put: async(track) => {
         const dbTrackPosition = new PouchDB(DB_TRACK_POSITION)
         try {

@@ -37,6 +37,11 @@ export default class PlayerModel extends RhelenaPresentationModel {
         // listen for current track changed event
         manuh.unsubscribe(topics.episodes.list.select.set, "PlayModel")
         manuh.subscribe(topics.episodes.list.select.set, "PlayModel", async msg => {
+
+            if (!msg.episode) { // unselected episode
+                this.currentTrackInfo = null
+                return
+            }
             
             //if the current track set is the same that is playing, then pause it. Otherwise, load and play the new track set.
             if (this.currentTrackInfo && this.currentTrackInfo.id === msg.episode.id) {
@@ -70,7 +75,11 @@ export default class PlayerModel extends RhelenaPresentationModel {
                 }
                                
                 this.isFloatingMode = state.isFloatingMode
-                await this.loadEpisode(state.episode)
+                const episode = await this.loadEpisode(state.episode)
+                
+                if (!episode) {
+                    return
+                }
     
                 //force a pause
                 setTimeout(_ => { 
@@ -97,12 +106,22 @@ export default class PlayerModel extends RhelenaPresentationModel {
     }
     
     async loadEpisode(episode) {
+        const previousTrack = JSON.parse(JSON.stringify(this.currentTrackInfo))
         this.currentTrackInfo = episode
             
         return new Promise(async (resolve, reject) => {            
             assetService.storeAudio(this.currentTrackInfo.url, async (result, err) => {  
+                
                 if (err) {
-                    reportError(err)
+                    
+                    if (err.toString && err.toString().indexOf("cancelled") !== -1) {
+                        this.currentTrackInfo = previousTrack
+                        manuh.publish(topics.player.runtime.buffer.set, { value: 0, trackId: episode.id})
+                        manuh.publish(topics.episodes.list.select.set, { episode: previousTrack })
+                        return resolve(null)
+                    }
+
+                    reportError("[PlayerModel][loadEpisode-Promise]:: " + err)
                     return reject(err)
                 }
                 const { audioPath, originalPath } = result
@@ -144,8 +163,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
         this.pause()
         return new Promise(async (resolve, reject) => {
             try {
-                await this.loadEpisode(episode)
-                resolve(await this.play())
+                const episodeLoaded = await this.loadEpisode(episode)
+                if (episodeLoaded) {
+                    resolve(await this.play())
+                }
             } catch (error) {
                 reportError(error)
                 reject(error)
@@ -293,8 +314,10 @@ export default class PlayerModel extends RhelenaPresentationModel {
         
         if (shareResult.action === "sharedAction") {
             this.resetClipper()
-            await this.loadEpisode(this.currentTrackInfo)
-            this.play()
+            const episode = await this.loadEpisode(this.currentTrackInfo)
+            if (episode) {
+                this.play()
+            }
         }
     }
 

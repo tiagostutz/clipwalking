@@ -106,6 +106,7 @@ export const KittenTheme = {
       back: Colors.background,
       underlay: Colors.neutralBackground,
       highlight: Colors.primary,
+      cancel: Colors.danger
     },
     border: {
       base: Colors.border,

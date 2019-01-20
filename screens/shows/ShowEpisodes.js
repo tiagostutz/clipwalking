@@ -57,7 +57,7 @@ export default class ShowEpisodes extends Component {
                     <FlatList
                         initialNumToRender={10}
                         data={this.state.episodes}
-                        renderItem={({ item }) => <EpisodeItem episode={item} />}
+                        renderItem={({ item }) => <EpisodeItem disableRemove episode={item} />}
                         keyExtractor={(item) => `${item.id}`}
                         style={styleCompiled}
                     />

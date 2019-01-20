@@ -80,12 +80,14 @@ export default class EpisodeItem extends Component {
             </TouchableOpacity>)
         }
 
-        rightButtons.push(<TouchableOpacity key={2} style={[styles.backButton, styles.backDeleteButton]} onPress={() => this.viewModel.removeEpisode()}>
-            <View style={styles.innerButtonView}>
-                <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
-                <RkText style={styles.backButtonLabel}>{t('delete')}</RkText>
-            </View>
-        </TouchableOpacity>)
+        if(!this.props.disableRemove) {
+            rightButtons.push(<TouchableOpacity key={2} style={[styles.backButton, styles.backDeleteButton]} onPress={() => this.viewModel.removeEpisode()}>
+                <View style={styles.innerButtonView}>
+                    <Icon name={`${ICON_PREFIX}trash`} size={25} color="white" />
+                    <RkText style={styles.backButtonLabel}>{t('delete')}</RkText>
+                </View>
+            </TouchableOpacity>)
+        }
 
         const rightButtonsView = (
             <View style={{ width: 64*rightButtons.length, marginTop: 10, marginBottom: 10, flexDirection: 'row' }}>

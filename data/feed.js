@@ -14,24 +14,6 @@ PouchDB.plugin(find)
 
 const feedData = {    
 
-    fetch: (url) => {
-        const urlDownload = httpsURL(url)
-
-        fetch(urlDownload)
-        .catch(err => reportError(err))
-        .then(response => response.text())
-        .then(responseData => rssParser.parse(responseData))
-        .then((rss, err) => {
-            rss.url = urlDownload
-            if (err) {
-                return callback(null, err)
-            }
-            rss.items.map(rssItem => feedData.prepareFeedItem(rss, rssItem))
-            return true
-        })
-
-    },
-
     get: async(id) => {
         const dbFeedFull = new PouchDB(DB_FEED_FULL)
         try {
@@ -58,6 +40,36 @@ const feedData = {
 
         } catch (error) {
             reportError(error)
+            return false
+        }
+    },
+
+    getAllItensByShow: async (showFeed, callback) => {
+        const dbFeedFull = new PouchDB(DB_FEED_FULL)
+        try {
+            const aux = await dbFeedFull.allDocs({include_docs: true})
+            const feeds = aux.rows.map(e => e.doc).filter(d => d.showURL === showFeed.url)            
+            const normalizedResult = feeds.map(rssItem => feedData.prepareFeedItem(showFeed, rssItem))
+            
+            const urlDownload = httpsURL(showFeed.url)
+            fetch(urlDownload)
+            .catch(err => reportError(err))
+            .then(response => response.text())
+            .then(responseData => rssParser.parse(responseData))
+            .then((rss, err) => {
+                rss.url = urlDownload
+                if (err) {
+                    reportError(err)
+                    return callback(normalizedResult)
+                }
+                return callback(normalizedResult.concat(rss.items.map(rssItem => feedData.prepareFeedItem(rss, rssItem))))
+            })
+
+            return true
+
+        } catch (error) {
+            reportError(error)
+            callback(null, error)
             return false
         }
     },
@@ -146,6 +158,7 @@ const feedData = {
             
             if (feedDocsResp.total_rows === 0) {
                 return callback([])
+
             }else{
                 
                 // remove from the result the items that are present on other lists (playing or waiting)

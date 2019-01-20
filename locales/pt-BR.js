@@ -13,6 +13,7 @@ export default {
     "downloading episode": "baixando episódio",    
     "feed": "Feed",
     "fetching show info": "obtendo informações do Programa",
+    "fetching episodes list":"baixando lista de episódios",
     "get the": "Baixe o",
     "last updated": "atualizado em",
     "later": "depois",

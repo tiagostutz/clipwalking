@@ -13,6 +13,7 @@ export default {
     "downloading episode": "downloading episode",    
     "feed": "Feed",
     "fetching show info": "fetching show info",
+    "fetching episodes list": "fetching episodes list",
     "get the": "Get the",
     "last updated": "last updated",
     "later": "later",
